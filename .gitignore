@@ -1,0 +1,42 @@
+# Environment variables (NEVER COMMIT TO GIT!)
+.env
+.env.local
+.env.production
+.env.staging
+
+# Large Binaries & Disk Images
+*.img.gz
+*.apk
+
+# Android Build Intermediates
+android/**/build/
+android/.gradle/
+.gradle/
+
+# SQLite Databases & Local Data
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+data/
+uploads/
+
+# Installer folder (Separate standalone repository)
+rjdfi-installer/
+
+# Build & Dependency Outputs
+node_modules/
+dist/
+dist-ssr/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# OS & Editor Files
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.tmp

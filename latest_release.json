@@ -1,0 +1,8 @@
+{
+  "version_code": 203,
+  "version_name": "3.14.17",
+  "filename": "RJD-PisoWiFi-v3.14.17-Update.nxs",
+  "release_notes": "RJD PisoWiFi System v3.14.17 - Portal UI Overhaul & Hardware Fixes\n\n🎨 Dark glassmorphism portal UI — unified cards, header, modals, chat\n🔧 Fixed voucher input layout — clean horizontal row with glass-style input\n🛡️ Duplicate alert prevention — showError/showOfflineNotice mutually exclusive\n💰 REDEEM CREDIT button — same size as INSERT COIN, renamed\n📱 Mobile zero-scroll optimization — all components fit without scrolling\n🔌 x64 PC no-GPIO enforced — coinPin/relayPin null, no pin displayed\n🌐 VLAN strict isolation — ZeroTier/non-VLAN clients get empty coinbox list + error",
+  "published_at": "2026-08-16T00:00:00.000Z",
+  "bucket": "UPDATE FILE"
+}
