@@ -20,8 +20,9 @@ android/.gradle/
 data/
 uploads/
 
-# Installer folder (Separate standalone repository)
+# Standalone repositories
 rjdfi-installer/
+rjdfi-cloud-license/
 
 # Build & Dependency Outputs
 node_modules/
