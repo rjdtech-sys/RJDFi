@@ -39,6 +39,10 @@ rm -f "$MOUNT_DIR/etc/systemd/system/network-online.target.wants/systemd-network
 ln -sf /dev/null "$MOUNT_DIR/etc/systemd/system/systemd-networkd-wait-online.service" 2>/dev/null || true
 ln -sf /dev/null "$MOUNT_DIR/etc/systemd/system/NetworkManager-wait-online.service" 2>/dev/null || true
 
+# Clean up leftover image copies and logs in partition to ensure free space
+echo "🧹 Freeing disk space inside image rootfs..."
+rm -rf "$MOUNT_DIR/opt/rjd-pisowifi/Image" "$MOUNT_DIR/var/cache/apt/archives/"*.deb "$MOUNT_DIR/var/log/"* 2>/dev/null || true
+
 # 1. Update Hostname
 echo "rjdfi-orangepi" > "$MOUNT_DIR/etc/hostname"
 sed -i 's/127.0.1.1.*/127.0.1.1\trjdfi-orangepi/g' "$MOUNT_DIR/etc/hosts" 2>/dev/null || true
@@ -74,13 +78,19 @@ if [ -n "$NEW_ROOT_PASS" ]; then
   echo "✅ Root password updated successfully."
 fi
 
-# 3. Inject / Update RJDFi Application
+# 4. Inject / Update RJDFi Application (Exclude Image/ directory)
 INSTALL_DIR="$MOUNT_DIR/opt/rjd-pisowifi"
 mkdir -p "$INSTALL_DIR"
 
 if [ -f "./server.js" ]; then
   echo "📦 Copying latest RJDFi system code into image..."
-  cp -rf ./* "$INSTALL_DIR/" 2>/dev/null || true
+  rm -rf "$INSTALL_DIR/Image" 2>/dev/null || true
+  for item in *; do
+    if [ "$item" != "Image" ] && [ "$item" != "orangepi-one_patch_v3.img.gz" ]; then
+      cp -rf "$item" "$INSTALL_DIR/" 2>/dev/null || true
+    fi
+  done
+  rm -rf "$INSTALL_DIR/Image" 2>/dev/null || true
 fi
 
 echo "🧹 Unmounting root partition..."
