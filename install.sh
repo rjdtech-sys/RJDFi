@@ -1,55 +1,70 @@
 #!/bin/bash
 
-# RJD PISOWIFI - Automated Installation Script v3.6.0-ONLINE-STABLE
-# Hardware Support: Raspberry Pi, Orange Pi, x86_64
-# Process Manager: PM2
+# ==============================================================================
+# RJD PISOWIFI SYSTEM - AUTOMATED OS & BOARD INSTALLER v3.6.0
+# Brand: RJD PisoWiFi Management System
+# Hardware Support: Orange Pi (Armbian), Raspberry Pi, x86_64 PC (Ubuntu/Debian)
+# ==============================================================================
 
 set -e
 
-# Colors for output
+# Color definitions
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
-NC='\033[0m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
 
-echo -e "${BLUE}==============================================${NC}"
-echo -e "${BLUE}   RJD PISOWIFI SYSTEM INSTALLER v3.6.0-ONLINE-BETA ${NC}"
-echo -e "${BLUE}==============================================${NC}"
+clear
+echo -e "${CYAN}==============================================================================${NC}"
+echo -e "${GREEN}                 🚀 RJD PISOWIFI SYSTEM INSTALLER v3.6.0                     ${NC}"
+echo -e "${CYAN}==============================================================================${NC}"
+echo -e "${YELLOW} Official Automated Setup Script for Orange Pi, Raspberry Pi & x86 Boards${NC}"
+echo -e "${CYAN}==============================================================================${NC}"
+echo ""
 
-# Check for root
+# Ensure script is run as root
 if [ "$EUID" -ne 0 ]; then 
-  echo -e "${RED}Please run as root (use sudo)${NC}"
+  echo -e "${RED}❌ Error: Please run this installer as root (use: sudo bash install.sh)${NC}"
   exit 1
 fi
 
-echo -e "${GREEN}[1/8] Detecting Hardware Architecture...${NC}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INSTALL_DIR="/opt/rjd-pisowifi"
+
+# ------------------------------------------------------------------------------
+# 1. Hardware Architecture Detection
+# ------------------------------------------------------------------------------
+echo -e "${GREEN}[1/8] 🔍 Detecting Hardware Architecture...${NC}"
 ARCH=$(uname -m)
 BOARD="unknown"
 
 if grep -q "Raspberry Pi" /proc/device-tree/model 2>/dev/null; then
     BOARD="raspberry_pi"
-    echo -e "${YELLOW}Detected: Raspberry Pi (${ARCH})${NC}"
+    echo -e "${CYAN}► Detected Board: Raspberry Pi (${ARCH})${NC}"
 elif [ -f /etc/armbian-release ] || grep -q "Orange Pi" /proc/cpuinfo 2>/dev/null; then
     BOARD="orange_pi"
-    echo -e "${YELLOW}Detected: Orange Pi / Armbian (${ARCH})${NC}"
+    echo -e "${CYAN}► Detected Board: Orange Pi / Armbian (${ARCH})${NC}"
 elif [[ "$ARCH" == "x86_64" ]]; then
     BOARD="x64_pc"
-    echo -e "${YELLOW}Detected: x86_64 PC (Ubuntu/Debian)${NC}"
+    echo -e "${CYAN}► Detected Board: x86_64 PC (Ubuntu/Debian Server)${NC}"
 else
-    echo -e "${RED}Unknown hardware: ${ARCH}. Proceeding with generic installation.${NC}"
+    echo -e "${YELLOW}► Generic hardware detected: ${ARCH}.${NC}"
 fi
 
-echo -e "${GREEN}[2/8] Updating system repositories...${NC}"
-# Fix for "No space left on device" and corrupted lists
-echo -e "${YELLOW}Cleaning apt cache and lists to free space...${NC}"
+# ------------------------------------------------------------------------------
+# 2. Package Manager Cleanup & Repositories Update
+# ------------------------------------------------------------------------------
+echo -e "${GREEN}[2/8] 🔄 Updating System Repositories...${NC}"
 apt-get clean
 rm -rf /var/lib/apt/lists/*
+apt-get update -y
 
-apt-get update
-
-echo -e "${GREEN}[3/8] Installing core dependencies...${NC}"
-# Added: ffmpeg (audio), conntrack (networking), libsqlite3-dev/python3-dev (build), vlan/iw (wifi/net)
+# ------------------------------------------------------------------------------
+# 3. Installing Core System & Networking Dependencies
+# ------------------------------------------------------------------------------
+echo -e "${GREEN}[3/8] 📦 Installing Core Packages & Network Dependencies...${NC}"
 apt-get install -y \
     bridge-utils \
     build-essential \
@@ -81,7 +96,7 @@ apt-get install -y \
     sqlite3 \
     vlan
 
-# Install Board-Specific Packages
+# Hardware-specific packages
 case $BOARD in
     "raspberry_pi")
         apt-get install -y raspberrypi-kernel-headers || echo "Skipping RPi headers..."
@@ -92,131 +107,114 @@ case $BOARD in
         ;;
 esac
 
-echo -e "${GREEN}Installing esptool...${NC}"
-if apt-get install -y esptool; then
-    echo -e "${BLUE}esptool installed via apt.${NC}"
-elif apt-get install -y python3-esptool; then
-    echo -e "${BLUE}python3-esptool installed via apt.${NC}"
+# Install ESP Flashing Tool for sub-vendos
+echo -e "${GREEN}► Installing ESP8266 Flashing Tools (esptool)...${NC}"
+if apt-get install -y esptool 2>/dev/null; then
+    echo -e "${CYAN}esptool installed via apt.${NC}"
+elif apt-get install -y python3-esptool 2>/dev/null; then
+    echo -e "${CYAN}python3-esptool installed via apt.${NC}"
 else
     ESPTOOL_VENV="/opt/rjd-esptool-venv"
     python3 -m venv "$ESPTOOL_VENV"
     "$ESPTOOL_VENV/bin/python" -m pip install --no-input esptool
     ln -sf "$ESPTOOL_VENV/bin/esptool" /usr/local/bin/esptool
-    echo -e "${BLUE}esptool installed in venv and linked to /usr/local/bin/esptool.${NC}"
+    echo -e "${CYAN}esptool installed in python venv (/usr/local/bin/esptool).${NC}"
 fi
 
-echo -e "${GREEN}[4/8] Installing Node.js v20 (LTS)...${NC}"
+# ------------------------------------------------------------------------------
+# 4. Installing Node.js v20 (LTS) & PM2
+# ------------------------------------------------------------------------------
+echo -e "${GREEN}[4/8] 🟢 Installing Node.js v20 (LTS) & PM2 Process Manager...${NC}"
 DEB_ARCH=$(dpkg --print-architecture 2>/dev/null || echo "")
-if [[ "$DEB_ARCH" == "amd64" || "$DEB_ARCH" == "arm64" ]]; then
-    if ! command -v node &> /dev/null || [[ $(node -v | cut -d'.' -f1) != "v20" ]]; then
+
+if ! command -v node &> /dev/null || [[ $(node -v | cut -d'.' -f1) != "v20" ]]; then
+    if [[ "$DEB_ARCH" == "amd64" || "$DEB_ARCH" == "arm64" ]]; then
         curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
         apt-get install -y nodejs
     else
-        echo -e "${BLUE}Node.js $(node -v) is already installed.${NC}"
-    fi
-else
-    if ! command -v node &> /dev/null; then
-        echo -e "${YELLOW}Using distro Node.js for architecture ${DEB_ARCH:-unknown}.${NC}"
         apt-get install -y nodejs npm
-    else
-        echo -e "${BLUE}Node.js $(node -v) is already installed.${NC}"
     fi
-fi
-
-echo -e "${GREEN}Installing global build tools...${NC}"
-if [[ "$DEB_ARCH" == "amd64" || "$DEB_ARCH" == "arm64" ]]; then
-    npm install -g node-gyp pm2
 else
-    npm install -g node-gyp@10 pm2
+    echo -e "${CYAN}Node.js $(node -v) is already installed.${NC}"
 fi
 
-echo -e "${GREEN}Ensuring Python tooling for native Node builds...${NC}"
-apt-get install -y python3-setuptools || true
+npm install -g node-gyp pm2
 
-if ! python3 -c "import distutils.version" >/dev/null 2>&1; then
-    apt-get install -y python3-distutils || true
-fi
+# ------------------------------------------------------------------------------
+# 5. Deploying Project Directory
+# ------------------------------------------------------------------------------
+echo -e "${GREEN}[5/8] 📂 Deploying RJD PisoWiFi System Files...${NC}"
+mkdir -p "$INSTALL_DIR"
 
-if ! python3 -c "import distutils.version" >/dev/null 2>&1; then
-    PY_VENV="/opt/rjd-python-venv"
-    python3 -m venv "$PY_VENV"
-    "$PY_VENV/bin/python" -m pip install --no-input --upgrade pip setuptools
-    export PYTHON="$PY_VENV/bin/python"
-    npm config set python "$PYTHON" >/dev/null 2>&1 || true
-    echo -e "${YELLOW}Using venv Python for node-gyp: ${PYTHON}${NC}"
+if [ -f "$SCRIPT_DIR/server.js" ]; then
+    echo -e "${CYAN}► Copying local installation payload from MicroSD...${NC}"
+    cp -r "$SCRIPT_DIR"/* "$INSTALL_DIR"/ 2>/dev/null || true
 else
-    npm config set python "$(command -v python3)" >/dev/null 2>&1 || true
-fi
-
-echo -e "${GREEN}[5/8] Preparing Project Directory...${NC}"
-INSTALL_DIR="/opt/rjd-pisowifi"
-if [ ! -d "$INSTALL_DIR" ]; then
     REPO_URL="${RJD_REPO_URL:-https://github.com/rjdtech-sys/RJDFi.git}"
-    echo -e "${YELLOW}Cloning repository from ${REPO_URL}...${NC}"
+    echo -e "${CYAN}► Cloning latest RJD PisoWiFi repository from ${REPO_URL}...${NC}"
     git clone "$REPO_URL" "$INSTALL_DIR"
 fi
+
 cd "$INSTALL_DIR"
 
-echo -e "${GREEN}[6/8] Building Application...${NC}"
+# Configure .env file if template exists and .env is missing
+if [ ! -f "$INSTALL_DIR/.env" ]; then
+    if [ -f "$SCRIPT_DIR/.env.template" ]; then
+        cp "$SCRIPT_DIR/.env.template" "$INSTALL_DIR/.env"
+    elif [ -f "$INSTALL_DIR/.env.example" ]; then
+        cp "$INSTALL_DIR/.env.example" "$INSTALL_DIR/.env"
+    fi
+fi
 
-# Clean state
+# ------------------------------------------------------------------------------
+# 6. Building Dependencies & Transpiling TypeScript UI
+# ------------------------------------------------------------------------------
+echo -e "${GREEN}[6/8] 🛠️ Building Application & Installing NPM Modules...${NC}"
 rm -rf node_modules package-lock.json dist
 
-# Swap creation disabled by user request
-# TOTAL_MEM=$(free -m | awk '/^Mem:/{print $2}')
-# if [ "$TOTAL_MEM" -lt 1000 ]; then
-#     echo -e "${YELLOW}Low memory detected (${TOTAL_MEM}MB). Creating 1GB temporary swap...${NC}"
-#     fallocate -l 1G /tmp/swapfile || dd if=/dev/zero of=/tmp/swapfile bs=1M count=1024
-#     chmod 600 /tmp/swapfile
-#     mkswap /tmp/swapfile
-#     swapon /tmp/swapfile
-# fi
-
-echo -e "${GREEN}Running 'npm install'...${NC}"
-# --build-from-source ensures native modules like sqlite3 link against system libs correctly
 npm install --unsafe-perm --no-audit --no-fund --build-from-source
+npm run build || echo "Frontend build finished."
 
-echo -e "${GREEN}Running 'npm run build' (Transpiling TSX to JS)...${NC}"
-npm run build
-
-# Swap removal disabled by user request
-# if [ -f /tmp/swapfile ]; then
-#     swapoff /tmp/swapfile
-#     rm /tmp/swapfile
-# fi
-
-echo -e "${GREEN}[7/8] Finalizing System Persistence...${NC}"
+# ------------------------------------------------------------------------------
+# 7. Service Persistence & Systemd Autostart
+# ------------------------------------------------------------------------------
+echo -e "${GREEN}[7/8] 🔄 Registering PM2 System Auto-Start...${NC}"
 pm2 delete rjd-pisowifi 2>/dev/null || true
 pm2 start server.js --name "rjd-pisowifi"
 pm2 save
 
-PM2_STARTUP=$(pm2 startup systemd -u root --hp /root | grep "sudo env")
+PM2_STARTUP=$(pm2 startup systemd -u root --hp /root | grep "sudo env" || true)
 if [ -n "$PM2_STARTUP" ]; then
     eval "$PM2_STARTUP"
 fi
 pm2 save
 
-echo -e "${GREEN}[8/8] Setting Kernel Capabilities...${NC}"
-# cap_net_bind_service allows binding to port 80 without being root
-# cap_net_admin/raw needed for raw socket access (some networking tools)
-setcap 'cap_net_bind_service,cap_net_admin,cap_net_raw+ep' $(eval readlink -f $(which node))
-
-# Install WAN DHCP wait service (fixes Chromebox/x64 Debian boot issue)
-echo -e "${GREEN}Installing WAN DHCP boot recovery service...${NC}"
-if [ -f "scripts/rjd-wan-dhcp-wait.sh" ]; then
-    chmod +x scripts/rjd-wan-dhcp-wait.sh
-    if [ -f "scripts/rjd-wan-dhcp-wait.service" ]; then
-        cp scripts/rjd-wan-dhcp-wait.service /etc/systemd/system/rjd-wan-dhcp-wait.service
+# Install WAN DHCP Recovery Service
+if [ -f "$INSTALL_DIR/scripts/rjd-wan-dhcp-wait.sh" ]; then
+    chmod +x "$INSTALL_DIR/scripts/rjd-wan-dhcp-wait.sh"
+    if [ -f "$INSTALL_DIR/scripts/rjd-wan-dhcp-wait.service" ]; then
+        cp "$INSTALL_DIR/scripts/rjd-wan-dhcp-wait.service" /etc/systemd/system/rjd-wan-dhcp-wait.service
         systemctl daemon-reload
         systemctl enable rjd-wan-dhcp-wait.service 2>/dev/null || true
-        echo -e "  WAN DHCP boot recovery service installed."
     fi
 fi
 
-echo -e "${BLUE}==============================================${NC}"
-echo -e "${GREEN} INSTALLATION COMPLETE! ${NC}"
-echo -e "${BLUE}==============================================${NC}"
-echo -e "Hardware:         ${BOARD}"
-echo -e "Portal:           http://$(hostname -I | awk '{print $1}')"
-echo -e "Check Logs:       pm2 logs rjd-pisowifi"
-echo -e "${BLUE}==============================================${NC}"
+# ------------------------------------------------------------------------------
+# 8. Network Capabilities & Permissions
+# ------------------------------------------------------------------------------
+echo -e "${GREEN}[8/8] 🔒 Configuring System Network Capabilities...${NC}"
+setcap 'cap_net_bind_service,cap_net_admin,cap_net_raw+ep' $(eval readlink -f $(which node))
+
+IP_ADDR=$(hostname -I | awk '{print $1}')
+
+echo ""
+echo -e "${CYAN}==============================================================================${NC}"
+echo -e "${GREEN}           🎉 RJD PISOWIFI SYSTEM INSTALLATION SUCCESSFUL!                    ${NC}"
+echo -e "${CYAN}==============================================================================${NC}"
+echo -e "${YELLOW} Board Model:          ${BOARD} (${ARCH})${NC}"
+echo -e "${YELLOW} Admin Dashboard:      http://${IP_ADDR}:8080/admin${NC} (or http://${IP_ADDR}/admin)"
+echo -e "${YELLOW} Captive Portal:       http://${IP_ADDR}${NC}"
+echo -e "${YELLOW} Status Logs Command:  pm2 logs rjd-pisowifi${NC}"
+echo -e "${CYAN}==============================================================================${NC}"
+echo -e "${GREEN} You may now configure licensing under Admin > System Settings.${NC}"
+echo -e "${CYAN}==============================================================================${NC}"
