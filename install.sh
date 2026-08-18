@@ -94,7 +94,8 @@ apt-get install -y \
     python-is-python3 \
     python3-pip \
     sqlite3 \
-    vlan
+    vlan \
+    xz-utils
 
 # Hardware-specific packages
 case $BOARD in
@@ -122,15 +123,21 @@ else
 fi
 
 # ------------------------------------------------------------------------------
-# 4. Installing Node.js v22 (LTS) & PM2
+# 4. Installing Node.js & PM2 Process Manager
 # ------------------------------------------------------------------------------
-echo -e "${GREEN}[4/8] 🟢 Installing Node.js v22 (LTS) & PM2 Process Manager...${NC}"
+echo -e "${GREEN}[4/8] 🟢 Installing Node.js & PM2 Process Manager...${NC}"
 DEB_ARCH=$(dpkg --print-architecture 2>/dev/null || echo "")
 
-if ! command -v node &> /dev/null || [[ $(node -v | cut -d'.' -f1) != "v22" ]]; then
-    if [[ "$DEB_ARCH" == "amd64" || "$DEB_ARCH" == "arm64" || "$DEB_ARCH" == "armhf" ]]; then
+if ! command -v node &> /dev/null || [[ $(node -v | cut -d'.' -f1) < "v20" ]]; then
+    if [[ "$DEB_ARCH" == "amd64" || "$DEB_ARCH" == "arm64" ]]; then
+        echo -e "${CYAN}► Installing Node.js v22 (LTS) via NodeSource...${NC}"
         curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
         apt-get install -y nodejs
+    elif [[ "$DEB_ARCH" == "armhf" || "$ARCH" == "armv7l" ]]; then
+        echo -e "${CYAN}► Downloading official Node.js v20 (LTS) prebuilt binary for 32-bit ARM (${ARCH})...${NC}"
+        curl -fsSL https://nodejs.org/dist/v20.18.3/node-v20.18.3-linux-armv7l.tar.xz -o /tmp/node-v20.tar.xz
+        tar -xJf /tmp/node-v20.tar.xz -C /usr/local --strip-components=1
+        rm -f /tmp/node-v20.tar.xz
     else
         apt-get install -y nodejs npm
     fi
