@@ -122,14 +122,14 @@ else
 fi
 
 # ------------------------------------------------------------------------------
-# 4. Installing Node.js v20 (LTS) & PM2
+# 4. Installing Node.js v22 (LTS) & PM2
 # ------------------------------------------------------------------------------
-echo -e "${GREEN}[4/8] 🟢 Installing Node.js v20 (LTS) & PM2 Process Manager...${NC}"
+echo -e "${GREEN}[4/8] 🟢 Installing Node.js v22 (LTS) & PM2 Process Manager...${NC}"
 DEB_ARCH=$(dpkg --print-architecture 2>/dev/null || echo "")
 
-if ! command -v node &> /dev/null || [[ $(node -v | cut -d'.' -f1) != "v20" ]]; then
-    if [[ "$DEB_ARCH" == "amd64" || "$DEB_ARCH" == "arm64" ]]; then
-        curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+if ! command -v node &> /dev/null || [[ $(node -v | cut -d'.' -f1) != "v22" ]]; then
+    if [[ "$DEB_ARCH" == "amd64" || "$DEB_ARCH" == "arm64" || "$DEB_ARCH" == "armhf" ]]; then
+        curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
         apt-get install -y nodejs
     else
         apt-get install -y nodejs npm
@@ -137,6 +137,11 @@ if ! command -v node &> /dev/null || [[ $(node -v | cut -d'.' -f1) != "v20" ]]; 
 else
     echo -e "${CYAN}Node.js $(node -v) is already installed.${NC}"
 fi
+
+npm config set fetch-retry-maxtimeout 120000
+npm config set fetch-retry-mintimeout 20000
+npm config set fetch-retries 5
+npm config set timeout 120000
 
 npm install -g node-gyp pm2
 
@@ -172,7 +177,12 @@ fi
 echo -e "${GREEN}[6/8] 🛠️ Building Application & Installing NPM Modules...${NC}"
 rm -rf node_modules package-lock.json dist
 
-npm install --unsafe-perm --no-audit --no-fund --build-from-source
+npm config set fetch-retry-maxtimeout 120000
+npm config set fetch-retry-mintimeout 20000
+npm config set fetch-retries 5
+npm config set timeout 120000
+
+npm install --unsafe-perm --no-audit --no-fund
 npm run build || echo "Frontend build finished."
 
 # ------------------------------------------------------------------------------
