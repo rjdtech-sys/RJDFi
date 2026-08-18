@@ -78,19 +78,29 @@ if [ -n "$NEW_ROOT_PASS" ]; then
   echo "✅ Root password updated successfully."
 fi
 
-# 4. Inject / Update RJDFi Application (Exclude Image/ directory)
+# 4. Inject / Update RJDFi Application (Exclude heavy binaries, node_modules, and databases)
 INSTALL_DIR="$MOUNT_DIR/opt/rjd-pisowifi"
 mkdir -p "$INSTALL_DIR"
 
 if [ -f "./server.js" ]; then
   echo "📦 Copying latest RJDFi system code into image..."
-  rm -rf "$INSTALL_DIR/Image" 2>/dev/null || true
-  for item in *; do
-    if [ "$item" != "Image" ] && [ "$item" != "orangepi-one_patch_v3.img.gz" ]; then
-      cp -rf "$item" "$INSTALL_DIR/" 2>/dev/null || true
+  rm -rf "$INSTALL_DIR/Image" "$INSTALL_DIR/orangepi-one_patch_v3.img.gz" 2>/dev/null || true
+
+  # Selectively copy JS application code, assets, and scripts (do NOT overwrite Linux node_modules or database)
+  cp -f ./server.js "$INSTALL_DIR/server.js" 2>/dev/null || true
+  cp -f ./package.json "$INSTALL_DIR/package.json" 2>/dev/null || true
+  cp -f ./install.sh "$INSTALL_DIR/install.sh" 2>/dev/null || true
+
+  for folder in lib public components scripts data migrations supabase; do
+    if [ -d "./$folder" ]; then
+      cp -rf "./$folder" "$INSTALL_DIR/" 2>/dev/null || true
     fi
   done
-  rm -rf "$INSTALL_DIR/Image" 2>/dev/null || true
+
+  # Convert CRLF line endings to LF for Linux compatibility
+  find "$INSTALL_DIR" -name "*.sh" -exec sed -i 's/\r$//' {} + 2>/dev/null || true
+  find "$INSTALL_DIR/scripts" -type f -exec sed -i 's/\r$//' {} + 2>/dev/null || true
+  sed -i 's/\r$//' "$INSTALL_DIR/install.sh" 2>/dev/null || true
 fi
 
 echo "🧹 Unmounting root partition..."
