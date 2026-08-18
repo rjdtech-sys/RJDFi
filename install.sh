@@ -145,10 +145,9 @@ else
     echo -e "${CYAN}Node.js $(node -v) is already installed.${NC}"
 fi
 
-npm config set fetch-retry-maxtimeout 120000
-npm config set fetch-retry-mintimeout 20000
-npm config set fetch-retries 5
-npm config set timeout 120000
+npm config set fetch-retry-maxtimeout 120000 2>/dev/null || true
+npm config set fetch-retry-mintimeout 20000 2>/dev/null || true
+npm config set fetch-retries 5 2>/dev/null || true
 
 npm install -g node-gyp pm2
 
@@ -185,10 +184,9 @@ fi
 echo -e "${GREEN}[6/8] 🛠️ Building Application & Installing NPM Modules...${NC}"
 rm -rf node_modules package-lock.json dist
 
-npm config set fetch-retry-maxtimeout 120000
-npm config set fetch-retry-mintimeout 20000
-npm config set fetch-retries 5
-npm config set timeout 120000
+npm config set fetch-retry-maxtimeout 120000 2>/dev/null || true
+npm config set fetch-retry-mintimeout 20000 2>/dev/null || true
+npm config set fetch-retries 5 2>/dev/null || true
 
 npm install --unsafe-perm --no-audit --no-fund
 npm run build || echo "Frontend build finished."
