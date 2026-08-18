@@ -33,9 +33,11 @@ mount "$ROOT_PART" "$MOUNT_DIR"
 
 echo "🎨 Applying RJD PisoWiFi Branding & Configuration..."
 
-# Disable unused systemd-networkd-wait-online service to ensure clean boot logs
-echo "🔧 Disabling unused systemd-networkd-wait-online.service..."
+# Permanently mask unused network-wait-online services by linking to /dev/null
+echo "🔧 Masking unused systemd-networkd-wait-online.service..."
 rm -f "$MOUNT_DIR/etc/systemd/system/network-online.target.wants/systemd-networkd-wait-online.service" 2>/dev/null || true
+ln -sf /dev/null "$MOUNT_DIR/etc/systemd/system/systemd-networkd-wait-online.service" 2>/dev/null || true
+ln -sf /dev/null "$MOUNT_DIR/etc/systemd/system/NetworkManager-wait-online.service" 2>/dev/null || true
 
 # 1. Update Hostname
 echo "rjdfi-orangepi" > "$MOUNT_DIR/etc/hostname"

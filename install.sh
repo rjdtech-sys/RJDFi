@@ -240,11 +240,11 @@ fi
 echo -e "${GREEN}[8/8] 🔒 Configuring System Network Capabilities & DNS...${NC}"
 setcap 'cap_net_bind_service,cap_net_admin,cap_net_raw+ep' $(eval readlink -f $(which node))
 
-# Disable systemd-resolved and systemd-networkd-wait-online to prevent port 53 conflicts & boot delays
+# Disable systemd-resolved and mask systemd-networkd-wait-online to prevent port 53 conflicts & boot delays
 systemctl stop systemd-resolved 2>/dev/null || true
 systemctl disable systemd-resolved 2>/dev/null || true
 systemctl stop systemd-networkd-wait-online 2>/dev/null || true
-systemctl disable systemd-networkd-wait-online 2>/dev/null || true
+systemctl mask systemd-networkd-wait-online NetworkManager-wait-online 2>/dev/null || true
 
 # Rebind /etc/resolv.conf to clean Google/Cloudflare upstream DNS
 if [ -L /etc/resolv.conf ] || [ ! -f /etc/resolv.conf ]; then
