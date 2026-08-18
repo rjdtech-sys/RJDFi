@@ -237,8 +237,25 @@ fi
 # ------------------------------------------------------------------------------
 # 8. Network Capabilities & Permissions
 # ------------------------------------------------------------------------------
-echo -e "${GREEN}[8/8] 🔒 Configuring System Network Capabilities...${NC}"
+echo -e "${GREEN}[8/8] 🔒 Configuring System Network Capabilities & DNS...${NC}"
 setcap 'cap_net_bind_service,cap_net_admin,cap_net_raw+ep' $(eval readlink -f $(which node))
+
+# Disable systemd-resolved to prevent port 53 conflicts with dnsmasq on boot
+systemctl stop systemd-resolved 2>/dev/null || true
+systemctl disable systemd-resolved 2>/dev/null || true
+
+# Rebind /etc/resolv.conf to clean Google/Cloudflare upstream DNS
+if [ -L /etc/resolv.conf ] || [ ! -f /etc/resolv.conf ]; then
+    rm -f /etc/resolv.conf
+    echo "nameserver 8.8.8.8" > /etc/resolv.conf
+    echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+fi
+
+# Ensure global dnsmasq directory and configuration exists
+mkdir -p /etc/dnsmasq.d
+echo -e "local-ttl=10\nmax-ttl=30\n" > /etc/dnsmasq.d/rjd_00_global.conf
+systemctl enable dnsmasq 2>/dev/null || true
+systemctl restart dnsmasq 2>/dev/null || true
 
 IP_ADDR=$(hostname -I | awk '{print $1}')
 
