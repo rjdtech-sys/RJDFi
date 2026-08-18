@@ -173,6 +173,6 @@ for attempt in $(seq 1 $MAX_RETRIES); do
     sleep $RETRY_DELAY
 done
 
-log "FAILED: Could not obtain DHCP IP on $WAN after $MAX_RETRIES attempts."
-log "The application-level WAN recovery (ensureWanDhcp) will continue retrying."
-exit 1
+log "NOTICE: Could not obtain DHCP IP on $WAN after $MAX_RETRIES attempts."
+log "The application-level WAN recovery (ensureWanDhcp) will continue retrying in background."
+exit 0
