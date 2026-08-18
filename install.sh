@@ -125,10 +125,10 @@ fi
 # ------------------------------------------------------------------------------
 # 4. Installing Node.js & PM2 Process Manager
 # ------------------------------------------------------------------------------
-echo -e "${GREEN}[4/8] 🟢 Installing Node.js & PM2 Process Manager...${NC}"
+echo -e "${GREEN}[4/8] 🟢 Checking Node.js Environment & PM2...${NC}"
 DEB_ARCH=$(dpkg --print-architecture 2>/dev/null || echo "")
 
-if ! command -v node &> /dev/null || [[ $(node -v | cut -d'.' -f1) < "v20" ]]; then
+if ! command -v node &> /dev/null; then
     if [[ "$DEB_ARCH" == "amd64" || "$DEB_ARCH" == "arm64" ]]; then
         echo -e "${CYAN}► Installing Node.js v22 (LTS) via NodeSource...${NC}"
         curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
@@ -164,6 +164,7 @@ if [ -f "$SCRIPT_DIR/server.js" ]; then
 else
     REPO_URL="${RJD_REPO_URL:-https://github.com/rjdtech-sys/RJDFi.git}"
     echo -e "${CYAN}► Cloning latest RJD PisoWiFi repository from ${REPO_URL}...${NC}"
+    rm -rf "$INSTALL_DIR"
     git clone "$REPO_URL" "$INSTALL_DIR"
 fi
 
