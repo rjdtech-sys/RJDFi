@@ -145,6 +145,12 @@ else
     echo -e "${CYAN}Node.js $(node -v) is already installed.${NC}"
 fi
 
+# Clean legacy invalid npm config keys
+npm config delete timeout 2>/dev/null || true
+if [ -f /root/.npmrc ]; then
+    sed -i '/^timeout=/d' /root/.npmrc 2>/dev/null || true
+fi
+
 npm config set fetch-retry-maxtimeout 120000 2>/dev/null || true
 npm config set fetch-retry-mintimeout 20000 2>/dev/null || true
 npm config set fetch-retries 5 2>/dev/null || true
@@ -183,6 +189,11 @@ fi
 # ------------------------------------------------------------------------------
 echo -e "${GREEN}[6/8] 🛠️ Building Application & Installing NPM Modules...${NC}"
 rm -rf node_modules package-lock.json dist
+
+npm config delete timeout 2>/dev/null || true
+if [ -f /root/.npmrc ]; then
+    sed -i '/^timeout=/d' /root/.npmrc 2>/dev/null || true
+fi
 
 npm config set fetch-retry-maxtimeout 120000 2>/dev/null || true
 npm config set fetch-retry-mintimeout 20000 2>/dev/null || true
