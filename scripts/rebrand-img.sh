@@ -59,6 +59,15 @@ EOF
 
 cp "$MOUNT_DIR/etc/motd" "$MOUNT_DIR/etc/issue" 2>/dev/null || true
 
+# 3. Optional: Update Root Password for Security
+NEW_ROOT_PASS="${2:-}"
+if [ -n "$NEW_ROOT_PASS" ]; then
+  echo "🔒 Updating root password in image /etc/shadow..."
+  PASS_HASH=$(openssl passwd -6 "$NEW_ROOT_PASS" 2>/dev/null || openssl passwd -1 "$NEW_ROOT_PASS")
+  sed -i "s|^root:[^:]*:|root:${PASS_HASH}:|" "$MOUNT_DIR/etc/shadow"
+  echo "✅ Root password updated successfully."
+fi
+
 # 3. Inject / Update RJDFi Application
 INSTALL_DIR="$MOUNT_DIR/opt/rjd-pisowifi"
 mkdir -p "$INSTALL_DIR"
