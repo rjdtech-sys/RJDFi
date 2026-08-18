@@ -99,7 +99,7 @@ apt-get install -y \
     xz-utils
 
 # Ensure setuptools distutils is available for Python 3.13+ node-gyp builds
-python3 -m pip install --break-system-packages setuptools || true
+python3 -m pip install --break-system-packages setuptools 2>/dev/null || true
 
 # Hardware-specific packages
 case $BOARD in
@@ -167,14 +167,18 @@ npm install -g node-gyp pm2
 echo -e "${GREEN}[5/8] 📂 Deploying RJD PisoWiFi System Files...${NC}"
 mkdir -p "$INSTALL_DIR"
 
+git config --global http.postBuffer 524288000 2>/dev/null || true
+git config --global http.lowSpeedLimit 1000 2>/dev/null || true
+git config --global http.lowSpeedTime 60 2>/dev/null || true
+
 if [ -f "$SCRIPT_DIR/server.js" ]; then
     echo -e "${CYAN}► Copying local installation payload from MicroSD...${NC}"
     cp -r "$SCRIPT_DIR"/* "$INSTALL_DIR"/ 2>/dev/null || true
 else
     REPO_URL="${RJD_REPO_URL:-https://github.com/rjdtech-sys/RJDFi.git}"
-    echo -e "${CYAN}► Cloning latest RJD PisoWiFi repository from ${REPO_URL}...${NC}"
+    echo -e "${CYAN}► Cloning latest RJD PisoWiFi repository (fast snapshot) from ${REPO_URL}...${NC}"
     rm -rf "$INSTALL_DIR"
-    git clone "$REPO_URL" "$INSTALL_DIR"
+    git clone --depth 1 "$REPO_URL" "$INSTALL_DIR"
 fi
 
 cd "$INSTALL_DIR"
