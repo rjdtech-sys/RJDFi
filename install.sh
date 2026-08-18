@@ -90,12 +90,16 @@ apt-get install -y \
     psmisc \
     python3 \
     python3-dev \
+    python3-pip \
+    python3-setuptools \
     python3-venv \
     python-is-python3 \
-    python3-pip \
     sqlite3 \
     vlan \
     xz-utils
+
+# Ensure setuptools distutils is available for Python 3.13+ node-gyp builds
+python3 -m pip install --break-system-packages setuptools || true
 
 # Hardware-specific packages
 case $BOARD in
