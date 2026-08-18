@@ -38,7 +38,7 @@ find_wan_interface() {
     fi
 
     # 3. Find first ethernet with carrier
-    for iface in /sys/class/net/en* /sys/class/net/eth*; do
+    for iface in /sys/class/net/end* /sys/class/net/en* /sys/class/net/eth*; do
         [ -d "$iface" ] || continue
         local name
         name=$(basename "$iface")
@@ -48,8 +48,12 @@ find_wan_interface() {
         return
     done
 
-    # 4. Fallback
-    echo "eth0"
+    # 4. Fallback: check end0 first if eth0 doesn't exist
+    if [ -d "/sys/class/net/end0" ]; then
+        echo "end0"
+    else
+        echo "eth0"
+    fi
 }
 
 # Check if interface has a valid global IPv4 address
