@@ -33,11 +33,9 @@ mount "$ROOT_PART" "$MOUNT_DIR"
 
 echo "🧹 Freeing disk space inside image rootfs..."
 rm -rf "$MOUNT_DIR/opt/rjd-pisowifi/Image" "$MOUNT_DIR/opt/ajc-pisowifi/Image" 2>/dev/null || true
-rm -rf "$MOUNT_DIR/var/cache/apt/archives/"*.deb "$MOUNT_DIR/var/log/"* 2>/dev/null || true
-find "$MOUNT_DIR/opt" -name "*.img" -delete 2>/dev/null || true
-find "$MOUNT_DIR/opt" -name "*.img.gz" -delete 2>/dev/null || true
-find "$MOUNT_DIR/root" -name "*.img" -delete 2>/dev/null || true
-find "$MOUNT_DIR/tmp" -name "*.img" -delete 2>/dev/null || true
+rm -rf "$MOUNT_DIR/var/cache/apt/archives/"* "$MOUNT_DIR/var/log/"* "$MOUNT_DIR/tmp/"* "$MOUNT_DIR/var/tmp/"* 2>/dev/null || true
+find "$MOUNT_DIR/opt" "$MOUNT_DIR/root" "$MOUNT_DIR/home" -name "*.img" -delete 2>/dev/null || true
+find "$MOUNT_DIR/opt" "$MOUNT_DIR/root" "$MOUNT_DIR/home" -name "*.img.gz" -delete 2>/dev/null || true
 
 echo "🎨 Applying RJD PisoWiFi Branding & Configuration..."
 
@@ -49,7 +47,8 @@ ln -sf /dev/null "$MOUNT_DIR/etc/systemd/system/NetworkManager-wait-online.servi
 
 # 1. Update Hostname
 echo "rjdfi-orangepi" > "$MOUNT_DIR/etc/hostname"
-sed -i 's/127.0.1.1.*/127.0.1.1\trjdfi-orangepi/g' "$MOUNT_DIR/etc/hosts" 2>/dev/null || true
+python3 -c "import re; f='$MOUNT_DIR/etc/hosts'; data=open(f).read(); open(f,'w').write(re.sub(r'127\.0\.1\.1.*', '127.0.1.1\trjdfi-orangepi', data))" 2>/dev/null || \
+perl -pi -e 's/127.0.1.1.*/127.0.1.1\trjdfi-orangepi/g' "$MOUNT_DIR/etc/hosts" 2>/dev/null || true
 
 # 2. Update MOTD Welcome Banner
 cat << 'EOF' > "$MOUNT_DIR/etc/motd"
@@ -78,7 +77,8 @@ NEW_ROOT_PASS="${2:-}"
 if [ -n "$NEW_ROOT_PASS" ]; then
   echo "🔒 Updating root password in image /etc/shadow..."
   PASS_HASH=$(openssl passwd -6 "$NEW_ROOT_PASS" 2>/dev/null || openssl passwd -1 "$NEW_ROOT_PASS")
-  sed -i "s|^root:[^:]*:|root:${PASS_HASH}:|" "$MOUNT_DIR/etc/shadow"
+  python3 -c "import re; f='$MOUNT_DIR/etc/shadow'; data=open(f).read(); open(f,'w').write(re.sub(r'^root:[^:]*:', 'root:${PASS_HASH}:', data, count=1, flags=re.M))" 2>/dev/null || \
+  perl -pi -e "s|^root:[^:]*:|root:${PASS_HASH}:|" "$MOUNT_DIR/etc/shadow" 2>/dev/null || true
   echo "✅ Root password updated successfully."
 fi
 
