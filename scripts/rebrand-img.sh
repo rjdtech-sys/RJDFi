@@ -103,6 +103,18 @@ if [ -f "./server.js" ]; then
   sed -i 's/\r$//' "$INSTALL_DIR/install.sh" 2>/dev/null || true
 fi
 
+# 5. Clean & Rebrand PM2 Process & Legacy Paths
+echo "🔄 Rebranding PM2 process dump and redirecting legacy paths..."
+rm -rf "$MOUNT_DIR/opt/ajc-pisowifi" 2>/dev/null || true
+ln -sf /opt/rjd-pisowifi "$MOUNT_DIR/opt/ajc-pisowifi" 2>/dev/null || true
+
+for pm2dump in "$MOUNT_DIR/root/.pm2/dump.pm2" "$MOUNT_DIR/home"/*/.pm2/dump.pm2; do
+  if [ -f "$pm2dump" ]; then
+    sed -i 's/ajc-pisowifi/rjd-pisowifi/g' "$pm2dump" 2>/dev/null || true
+    sed -i 's|/opt/ajc-pisowifi|/opt/rjd-pisowifi|g' "$pm2dump" 2>/dev/null || true
+  fi
+done
+
 echo "🧹 Unmounting root partition..."
 umount "$MOUNT_DIR"
 losetup -d "$LOOP_DEV"
