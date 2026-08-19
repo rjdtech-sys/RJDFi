@@ -31,6 +31,14 @@ echo "📂 Mounting root partition $ROOT_PART to $MOUNT_DIR..."
 mkdir -p "$MOUNT_DIR"
 mount "$ROOT_PART" "$MOUNT_DIR"
 
+echo "🧹 Freeing disk space inside image rootfs..."
+rm -rf "$MOUNT_DIR/opt/rjd-pisowifi/Image" "$MOUNT_DIR/opt/ajc-pisowifi/Image" 2>/dev/null || true
+rm -rf "$MOUNT_DIR/var/cache/apt/archives/"*.deb "$MOUNT_DIR/var/log/"* 2>/dev/null || true
+find "$MOUNT_DIR/opt" -name "*.img" -delete 2>/dev/null || true
+find "$MOUNT_DIR/opt" -name "*.img.gz" -delete 2>/dev/null || true
+find "$MOUNT_DIR/root" -name "*.img" -delete 2>/dev/null || true
+find "$MOUNT_DIR/tmp" -name "*.img" -delete 2>/dev/null || true
+
 echo "🎨 Applying RJD PisoWiFi Branding & Configuration..."
 
 # Permanently mask unused network-wait-online services by linking to /dev/null
@@ -38,10 +46,6 @@ echo "🔧 Masking unused systemd-networkd-wait-online.service..."
 rm -f "$MOUNT_DIR/etc/systemd/system/network-online.target.wants/systemd-networkd-wait-online.service" 2>/dev/null || true
 ln -sf /dev/null "$MOUNT_DIR/etc/systemd/system/systemd-networkd-wait-online.service" 2>/dev/null || true
 ln -sf /dev/null "$MOUNT_DIR/etc/systemd/system/NetworkManager-wait-online.service" 2>/dev/null || true
-
-# Clean up leftover image copies and logs in partition to ensure free space
-echo "🧹 Freeing disk space inside image rootfs..."
-rm -rf "$MOUNT_DIR/opt/rjd-pisowifi/Image" "$MOUNT_DIR/var/cache/apt/archives/"*.deb "$MOUNT_DIR/var/log/"* 2>/dev/null || true
 
 # 1. Update Hostname
 echo "rjdfi-orangepi" > "$MOUNT_DIR/etc/hostname"
