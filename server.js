@@ -2840,12 +2840,12 @@ async function checkAndBlockExpired(mac, clientIp) {
 // Called from probe endpoints and catch-all middleware
 async function ensureBlockedNoSession(mac, clientIp) {
   if (!mac || isRecentlyBlocked(mac)) return;
-  // Check if device actually has an active session — if yes, skip
-  const active = await db.get('SELECT mac FROM sessions WHERE mac = ? AND remaining_seconds > 0', [mac]);
+  // Check if device actually has an active UNPAUSED session — if yes, skip
+  const active = await db.get('SELECT mac FROM sessions WHERE mac = ? AND remaining_seconds > 0 AND (is_paused = 0 OR is_paused IS NULL)', [mac]);
   if (active) return;
-  // No active session — apply blocking rules
+  // No active unpaused session — apply blocking rules immediately with force = true
   console.log(`[AUTH] ensureBlockedNoSession: ${mac} — removing stale whitelist, applying DNS redirect`);
-  await network.blockMAC(mac, clientIp);
+  await network.blockMAC(mac, clientIp, true);
   markAsBlocked(mac);
 }
 
@@ -11051,7 +11051,7 @@ function startBackgroundTimers() {
   // HTTP probe then gets a 302 → captive portal popup.
   const _expiredGuardNotified = new Map(); // mac -> last notify timestamp
   const EXPIRED_GUARD_NOTIFY_INTERVAL = 60000; // re-notify every 60s max per MAC
-  const EXPIRED_GUARD_RECHECK_INTERVAL = 60000; // verify iptables every 60s per MAC
+  const EXPIRED_GUARD_RECHECK_INTERVAL = 5000; // verify iptables every 5s per MAC
 
   const expiredGuardTimer = setInterval(async () => {
     try {
