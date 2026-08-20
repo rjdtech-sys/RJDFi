@@ -1,6 +1,6 @@
 {
   "name": "rjd-pisowifi",
-  "version": "3.14.30",
+  "version": "3.14.31",
   "description": "Enterprise-grade PisoWiFi Management System",
   "main": "server.js",
   "type": "commonjs",
