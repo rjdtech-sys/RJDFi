@@ -1,8 +1,8 @@
 {
-  "version_code": 219,
-  "version_name": "3.14.33",
-  "filename": "RJD-PisoWiFi-v3.14.33-Update.nxs",
-  "release_notes": "RJD PisoWiFi System v3.14.33 - Fix Vendor ID Lookup & Eliminate Supabase 23502 NOT NULL Error\n\n🛡️ Vendor ID Lookup & Clean Registration\n- Updated edge-sync to extract effective vendor_id from licenses.created_by if vendor_id is null on cloud license\n- Added missing vendor_id update to existing vendors records\n- Safely skips vendors insert if vendor_id is unassigned while continuing direct hardware_id revenue & online status sync",
+  "version_code": 220,
+  "version_name": "3.14.34",
+  "filename": "RJD-PisoWiFi-v3.14.34-Update.nxs",
+  "release_notes": "RJD PisoWiFi System v3.14.34 - Complete Multi-Fallback Vendor Resolution & Clean Registration\n\n🛡️ Multi-Fallback Vendor ID Resolution\n- Added findValidVendorId to edge-sync querying licenses, vendors, and user_roles tables in Supabase for valid account UUIDs\n- Eliminates 'Skipping vendors insert' log warning entirely\n- Ensures vendor_id is automatically assigned and machine registers as ONLINE instantly on cloud dashboard",
   "published_at": "2026-08-21T00:00:00.000Z",
   "bucket": "UPDATE FILE"
 }
