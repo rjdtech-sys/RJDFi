@@ -1,8 +1,8 @@
 {
-  "version_code": 221,
-  "version_name": "3.14.35",
-  "filename": "RJD-PisoWiFi-v3.14.35-Update.nxs",
-  "release_notes": "RJD PisoWiFi System v3.14.35 - Clean Syntax Fix & Auto-Update Null Vendor ID on Cloud Licenses\n\n🛡️ Clean Method Definition & Auto Vendor Fix\n- Fixed edge-sync class method syntax error on line 269\n- Automatically populates vendor_id in Supabase licenses table with created_by account UUID if vendor_id is null on old generated licenses",
+  "version_code": 222,
+  "version_name": "3.14.36",
+  "filename": "RJD-PisoWiFi-v3.14.36-Update.nxs",
+  "release_notes": "RJD PisoWiFi System v3.14.36 - Local Vendor Storage Helper Methods & Automatic Vendors Registration\n\n🛡️ Added loadLocalVendorId & saveLocalVendorId Methods\n- Implemented missing loadLocalVendorId and saveLocalVendorId class methods on EdgeSync\n- Fixes TypeError and guarantees machine registration in vendors table on Supabase\n- Automatically populates vendor_id on cloud licenses and registers machines with ONLINE status",
   "published_at": "2026-08-21T00:00:00.000Z",
   "bucket": "UPDATE FILE"
 }
