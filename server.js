@@ -7183,6 +7183,17 @@ app.get('/api/system/check-update', requireAdmin, async (req, res) => {
         }
 
         if (!updateInfo) {
+            try {
+                const ghRes = await fetch('https://raw.githubusercontent.com/rjdtech-sys/RJDFi/main/update_release.json', { cache: 'no-store' });
+                if (ghRes.ok) {
+                    const text = await ghRes.text();
+                    updateInfo = JSON.parse(text);
+                    foundBucket = 'GitHub Repo';
+                }
+            } catch (_) {}
+        }
+
+        if (!updateInfo) {
             return res.json({ has_update: false, current_version: currentVersionCode, message: 'No update information found in cloud.' });
         }
 
