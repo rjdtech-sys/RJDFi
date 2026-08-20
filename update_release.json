@@ -1,8 +1,8 @@
 {
-  "version_code": 218,
-  "version_name": "3.14.32",
-  "filename": "RJD-PisoWiFi-v3.14.32-Update.nxs",
-  "release_notes": "RJD PisoWiFi System v3.14.32 - Fix Machine Online Status & Revenue Cloud Sync Guard\n\n⚡ Machine Registration & Status Sync Fix\n- Fixed registerOrFetchMachine in edge-sync to fetch vendor_id directly from bound cloud license RJD-PISO-63C4DE5B-93AC2ADA\n- Changed status payload default from 'offline' to 'online'\n- Bypassed machineId exit guard in syncMachineStatus so revenue and online status sync directly by hardware_id CPU-02c00081ece21355",
+  "version_code": 219,
+  "version_name": "3.14.33",
+  "filename": "RJD-PisoWiFi-v3.14.33-Update.nxs",
+  "release_notes": "RJD PisoWiFi System v3.14.33 - Fix Vendor ID Lookup & Eliminate Supabase 23502 NOT NULL Error\n\n🛡️ Vendor ID Lookup & Clean Registration\n- Updated edge-sync to extract effective vendor_id from licenses.created_by if vendor_id is null on cloud license\n- Added missing vendor_id update to existing vendors records\n- Safely skips vendors insert if vendor_id is unassigned while continuing direct hardware_id revenue & online status sync",
   "published_at": "2026-08-21T00:00:00.000Z",
   "bucket": "UPDATE FILE"
 }
