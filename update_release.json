@@ -1,8 +1,8 @@
 {
-  "version_code": 211,
-  "version_name": "3.14.25",
-  "filename": "RJD-PisoWiFi-v3.14.25-Update.nxs",
-  "release_notes": "RJD PisoWiFi System v3.14.25 - Production Release\n\n⚡ 24/7 Pin 3 Hardware Interrupt Pulse Listening\n- Fixed main coinslot pulse watching on Pin 3 (GPIO 12) for Orange Pi One / Raspberry Pi\n- Kept sysfs epoll interrupt watching active 24/7 with zero CPU overhead\n\n💰 Auto Revenue & Earnings Cloud Sync\n- Daily, Weekly, Monthly, Yearly, and Total revenues auto-sync to cloud every 120s heartbeat\n\n🛡️ Zero-Loss Backup & Restore\n- Config, .env, and SQLite databases preserved automatically across all system updates\n\n🎯 Pricing Rate Key Normalization\n- Normalized all rate schemas for instant credit and time calculation",
+  "version_code": 212,
+  "version_name": "3.14.26",
+  "filename": "RJD-PisoWiFi-v3.14.26-Update.nxs",
+  "release_notes": "RJD PisoWiFi System v3.14.26 - Paused Session Internet Suspension & Portal Timer Fix\n\n⏸️ Fixed Paused Session Network Blocking\n- Forces immediate blockMAC execution (bypasses 15m cooldown guard) when pausing a session\n- Instantly flushes active TCP conntrack sockets and inserts FORWARD REJECT rules\n- Ensures zero internet access (Google, apps, streaming) while time is paused\n\n⏱️ Frozen Portal Timer UI When Paused\n- Fixed frontend startCountdown so countdown interval does not decrement while session is paused\n- Displays exact frozen paused time without ticking down or snapping back\n\n🚀 Proceed to Internet Auto-Resume Prompt\n- Clicking 'PROCEED TO INTERNET' while paused prompts user to automatically resume their session",
   "published_at": "2026-08-21T00:00:00.000Z",
   "bucket": "UPDATE FILE"
 }

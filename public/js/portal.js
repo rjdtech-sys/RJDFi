@@ -659,8 +659,8 @@
       if (elements.creditPesos) elements.creditPesos.textContent = creditPesos;
     }
 
-    // Start countdown
-    startCountdown(session.remainingSeconds || session.remaining_seconds);
+    // Start countdown (pass isPaused flag so timer does not decrement while paused)
+    startCountdown(session.remainingSeconds || session.remaining_seconds, Boolean(session.isPaused));
 
     // Keep a persistent socket to catch server-side session-expired events
     ensureSessionSocket();
@@ -725,10 +725,19 @@
     }
   }
 
-  function startCountdown(seconds) {
+  function startCountdown(seconds, isPaused = false) {
     stopCountdown();
 
     let remaining = seconds;
+
+    if (elements.sessionTimer) {
+      elements.sessionTimer.textContent = formatSessionTime(remaining);
+    }
+
+    if (isPaused) {
+      // Session is paused — do not run the 1-second decrement timer
+      return;
+    }
 
     countdownTimer = setInterval(() => {
       remaining--;
@@ -1872,7 +1881,13 @@
     hideRatesModal();
   }
 
-  function handleProceed() {
+  async function handleProceed() {
+    if (currentSession && currentSession.isPaused) {
+      if (confirm('Your internet time is currently PAUSED. Would you like to RESUME your time now to access the internet?')) {
+        await handlePause();
+      }
+      return;
+    }
     triggerConnectivityProbes();
     window.location.href = '/success';
   }

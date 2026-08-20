@@ -3943,9 +3943,9 @@ app.post('/api/session/pause', async (req, res) => {
 
     await db.run('UPDATE sessions SET is_paused = 1 WHERE token = ?', [token]);
 
-    // Block network access while paused
+    // Block network access while paused (force = true to bypass 15m cooldown map)
     try {
-      await network.blockMAC(session.mac, session.ip);
+      await network.blockMAC(session.mac, session.ip, true);
     } catch (e) {
       console.error('[Pause] Network block failed:', e.message);
     }
