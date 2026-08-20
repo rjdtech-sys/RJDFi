@@ -1,8 +1,8 @@
 {
-  "version_code": 212,
-  "version_name": "3.14.26",
-  "filename": "RJD-PisoWiFi-v3.14.26-Update.nxs",
-  "release_notes": "RJD PisoWiFi System v3.14.26 - Paused Session Internet Suspension & Portal Timer Fix\n\n⏸️ Fixed Paused Session Network Blocking\n- Forces immediate blockMAC execution (bypasses 15m cooldown guard) when pausing a session\n- Instantly flushes active TCP conntrack sockets and inserts FORWARD REJECT rules\n- Ensures zero internet access (Google, apps, streaming) while time is paused\n\n⏱️ Frozen Portal Timer UI When Paused\n- Fixed frontend startCountdown so countdown interval does not decrement while session is paused\n- Displays exact frozen paused time without ticking down or snapping back\n\n🚀 Proceed to Internet Auto-Resume Prompt\n- Clicking 'PROCEED TO INTERNET' while paused prompts user to automatically resume their session",
+  "version_code": 213,
+  "version_name": "3.14.27",
+  "filename": "RJD-PisoWiFi-v3.14.27-Update.nxs",
+  "release_notes": "RJD PisoWiFi System v3.14.27 - Silent Boot Exception Handling\n\n🛡️ Safe Custom Hardware ID Startup Query\n- Added safe catch handler to custom_hardware_id database lookup during early boot\n- Eliminates SQLITE_ERROR log output on initial server initialization",
   "published_at": "2026-08-21T00:00:00.000Z",
   "bucket": "UPDATE FILE"
 }

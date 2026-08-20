@@ -2171,7 +2171,7 @@ let systemHardwareId = null;
 (async () => {
   try {
     // 1. Check for custom hardware ID in config
-    const customHwId = await db.get('SELECT value FROM config WHERE key = ?', ['custom_hardware_id']);
+    const customHwId = await db.get('SELECT value FROM config WHERE key = ?', ['custom_hardware_id']).catch(() => null);
     
     if (customHwId && customHwId.value) {
       systemHardwareId = customHwId.value;
