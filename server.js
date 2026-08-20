@@ -7273,6 +7273,33 @@ app.get('/api/system/available-updates', requireAdmin, async (req, res) => {
     }
 });
 
+// 1-CLICK GITHUB REPOSITORY UPDATE
+app.post('/api/system/git-update', requireAdmin, async (req, res) => {
+    try {
+        const { exec } = require('child_process');
+        console.log('[Git Update] Initiating 1-click update from GitHub repository...');
+
+        const cmd = 'git fetch origin main && git reset --hard origin/main && npm run build';
+        exec(cmd, { cwd: __dirname }, (error, stdout, stderr) => {
+            if (error) {
+                console.error('[Git Update] Git pull failed:', error.message);
+                return res.status(500).json({ error: error.message });
+            }
+            console.log('[Git Update] Git pull successful:', stdout);
+            res.json({ success: true, message: 'System updated from GitHub successfully. Service restarting...' });
+
+            setTimeout(() => {
+                exec('pm2 restart rjd-pisowifi', (err) => {
+                    if (err) process.exit(0);
+                });
+            }, 1000);
+        });
+    } catch (err) {
+        console.error('[Git Update] Failed to initiate update:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.post('/api/system/download-and-update', requireAdmin, async (req, res) => {
     const { filename, bucket } = req.body;
     if (!filename) return res.status(400).json({ error: 'Filename is required' });
