@@ -1,8 +1,8 @@
 {
-  "version_code": 214,
-  "version_name": "3.14.28",
-  "filename": "RJD-PisoWiFi-v3.14.28-Update.nxs",
-  "release_notes": "RJD PisoWiFi System v3.14.28 - Zero-Delay Instant Network Blocking & UI Cleanup\n\n🎨 UI Clean Up: Removed Proceed to Internet Button\n- Completely removed the 'PROCEED TO INTERNET' button from the captive portal session view per user request\n\n⚡ Zero-Delay Instant Internet Blocking (Paused & 0-Time Devices)\n- Fixed ensureBlockedNoSession to treat paused sessions (is_paused = 1) as non-active, preventing probe bypass\n- Reduced EXPIRED_GUARD_RECHECK_INTERVAL from 60 seconds to 5 seconds for instant background reconciliation\n- Synchronously flushes all Linux conntrack socket directions (-s, -d, -r, -q) and applies immediate FORWARD REJECT rules",
+  "version_code": 215,
+  "version_name": "3.14.29",
+  "filename": "RJD-PisoWiFi-v3.14.29-Update.nxs",
+  "release_notes": "RJD PisoWiFi System v3.14.29 - Critical Startup Session Restoration & Paused Device Shield Fix\n\n🛡️ Critical Startup Restoration Fix\n- Fixed restoreSystemState in server.js which previously re-whitelisted ALL paused sessions on system restart/update\n- Startup restoration now respects is_paused === 1 and immediately enforces blockMAC rules on all paused devices across reboots, restarts, and updates",
   "published_at": "2026-08-21T00:00:00.000Z",
   "bucket": "UPDATE FILE"
 }

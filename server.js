@@ -10384,7 +10384,7 @@ async function bootupRestore(isRestricted = false) {
     console.warn('[RJD] Failed to load NodeMCU devices for whitelisting:', e.message);
   }
 
-  const sessions = await db.all('SELECT mac, ip FROM sessions WHERE remaining_seconds > 0 ORDER BY connected_at DESC');
+  const sessions = await db.all('SELECT mac, ip, is_paused FROM sessions WHERE remaining_seconds > 0 ORDER BY connected_at DESC');
   
   // NodeMCU Exemption: Whitelist all NodeMCU devices regardless of sessions
   try {
@@ -10413,17 +10413,27 @@ async function bootupRestore(isRestricted = false) {
         continue;
       }
 
-      if (clientWhitelistedCount < 1) {
+      if (s.is_paused === 1) {
+        console.log(`[RJD] Startup: Device ${mac} is PAUSED — applying block rules`);
+        await network.blockMAC(s.mac, s.ip, true);
+      } else if (clientWhitelistedCount < 1) {
         console.log(`[RJD] Whitelisting primary client: ${mac}`);
         await network.whitelistMAC(s.mac, s.ip);
         clientWhitelistedCount++;
       } else {
         console.log(`[RJD] Blocking secondary client due to revocation: ${mac}`);
-        await network.blockMAC(s.mac, s.ip);
+        await network.blockMAC(s.mac, s.ip, true);
       }
     }
   } else {
-    for (const s of sessions) await network.whitelistMAC(s.mac, s.ip);
+    for (const s of sessions) {
+      if (s.is_paused === 1) {
+        console.log(`[RJD] Startup: Device ${s.mac} is PAUSED — applying block rules`);
+        await network.blockMAC(s.mac, s.ip, true);
+      } else {
+        await network.whitelistMAC(s.mac, s.ip);
+      }
+    }
   }
   
   console.log('[RJD] System Restoration Complete.');
