@@ -1388,14 +1388,21 @@
   }
 
   function calculateMinutes(totalPesos, rateList) {
-    if (!rateList || rateList.length === 0) return totalPesos * 10; // fallback
+    if (!rateList || rateList.length === 0) return totalPesos * 10;
 
     let remainingPesos = totalPesos;
     let totalMinutes = 0;
-    const sortedRates = [...rateList].sort((a, b) => b.pesos - a.pesos);
+
+    const normalizedRates = rateList.map(r => ({
+      pesos: parseFloat(r.pesos || r.amount || r.price || 0),
+      minutes: parseFloat(r.minutes || r.duration_minutes || r.duration || 0)
+    })).filter(r => r.pesos > 0 && r.minutes > 0);
+
+    if (normalizedRates.length === 0) return totalPesos * 10;
+
+    const sortedRates = [...normalizedRates].sort((a, b) => b.pesos - a.pesos);
 
     for (const rate of sortedRates) {
-      if (rate.pesos <= 0) continue;
       if (remainingPesos >= rate.pesos) {
         const times = Math.floor(remainingPesos / rate.pesos);
         totalMinutes += times * rate.minutes;
@@ -1403,13 +1410,12 @@
       }
     }
 
-    // Handle remainder
     if (remainingPesos > 0) {
       const smallestRate = sortedRates[sortedRates.length - 1];
       if (smallestRate && smallestRate.pesos > 0) {
         totalMinutes += Math.floor((remainingPesos / smallestRate.pesos) * smallestRate.minutes);
       } else {
-        totalMinutes += remainingPesos * 10; // last resort fallback
+        totalMinutes += remainingPesos * 10;
       }
     }
 

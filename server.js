@@ -10347,8 +10347,8 @@ async function bootupRestore(isRestricted = false) {
     console.error('[GPIO] initGPIO error:', err.message);
   }
   
-  // Safety-net: ensure GPIO starts paused (dormant) until INSERT COIN is pressed
-  pauseGPIO();
+  // Keep main GPIO hardware interrupt active for instant coin detection
+  // pauseGPIO();
   
   // Register callbacks for individual slots (if multi-slot)
   if (board?.value === 'nodemcu_esp' && coinSlots?.value) {
