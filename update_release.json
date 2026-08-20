@@ -1,8 +1,8 @@
 {
-  "version_code": 222,
-  "version_name": "3.14.36",
-  "filename": "RJD-PisoWiFi-v3.14.36-Update.nxs",
-  "release_notes": "RJD PisoWiFi System v3.14.36 - Local Vendor Storage Helper Methods & Automatic Vendors Registration\n\n🛡️ Added loadLocalVendorId & saveLocalVendorId Methods\n- Implemented missing loadLocalVendorId and saveLocalVendorId class methods on EdgeSync\n- Fixes TypeError and guarantees machine registration in vendors table on Supabase\n- Automatically populates vendor_id on cloud licenses and registers machines with ONLINE status",
+  "version_code": 223,
+  "version_name": "3.14.37",
+  "filename": "RJD-PisoWiFi-v3.14.37-Update.nxs",
+  "release_notes": "RJD PisoWiFi System v3.14.37 - Hardware ID In-Memory Caching (0-2% CPU), Full Vendors Metadata & Revenue Priority Sync\n\n⚡ CPU Performance Optimization & Vendors Metadata\n- Added in-memory hardware serial caching to lib/hardware.js to eliminate repeated sudo/exec calls and stabilize CPU usage\n- Populate location, license_key, is_licensed, and activated_at in Supabase vendors table\n- Refined calculateRevenues to prioritize primary sales logs and prevent total revenue pumping\n- Gracefully suppress log spam for non-existent Supabase schema tables",
   "published_at": "2026-08-21T00:00:00.000Z",
   "bucket": "UPDATE FILE"
 }
