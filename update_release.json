@@ -1,8 +1,8 @@
 {
-  "version_code": 210,
-  "version_name": "3.14.24",
-  "filename": "RJD-PisoWiFi-v3.14.24-Update.nxs",
-  "release_notes": "RJD PisoWiFi System v3.14.24 - Production Update\n\n🎨 Rebrand Portal UI to RJD PISOWIFI\n- Updated all portal headers, document titles, and footers to official RJD PISOWIFI branding\n\n⚡ USB-to-LAN & Direct LAN Coinslot Fix\n- Fixed coinslot selection for Orange Pi / Raspberry Pi direct LAN connections\n- Main Machine (GPIO 12 / Pin 3) is now 100% accessible without needing a VLAN tag\n\n🧹 Log Cleanup & Stability\n- Suppressed PGRST205 nodemcu_licenses table schema warnings\n- Automatically creates uploads/audio directory to eliminate ENOENT scandir error logs\n\n🚀 1-Click Dashboard GitHub Updater\n- Added 1-click 'UPDATE FROM GITHUB' button directly inside the UPDATER admin tab",
+  "version_code": 211,
+  "version_name": "3.14.25",
+  "filename": "RJD-PisoWiFi-v3.14.25-Update.nxs",
+  "release_notes": "RJD PisoWiFi System v3.14.25 - Production Release\n\n⚡ 24/7 Pin 3 Hardware Interrupt Pulse Listening\n- Fixed main coinslot pulse watching on Pin 3 (GPIO 12) for Orange Pi One / Raspberry Pi\n- Kept sysfs epoll interrupt watching active 24/7 with zero CPU overhead\n\n💰 Auto Revenue & Earnings Cloud Sync\n- Daily, Weekly, Monthly, Yearly, and Total revenues auto-sync to cloud every 120s heartbeat\n\n🛡️ Zero-Loss Backup & Restore\n- Config, .env, and SQLite databases preserved automatically across all system updates\n\n🎯 Pricing Rate Key Normalization\n- Normalized all rate schemas for instant credit and time calculation",
   "published_at": "2026-08-21T00:00:00.000Z",
   "bucket": "UPDATE FILE"
 }
