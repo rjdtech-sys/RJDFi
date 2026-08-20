@@ -61,6 +61,7 @@
     portalTitle: document.getElementById('portal-title'),
     portalSubtitle: document.getElementById('portal-subtitle'),
     portalHeader: document.getElementById('portal-header'),
+    portalHeaderLogo: document.getElementById('portal-header-logo'),
     customCss: document.getElementById('portal-custom-css'),
     customHtmlTop: document.getElementById('custom-html-top'),
     customHtmlBottom: document.getElementById('custom-html-bottom'),
@@ -462,6 +463,20 @@
     // Apply subtitle
     if (config.subtitle) {
       elements.portalSubtitle.textContent = config.subtitle;
+    }
+
+    // Apply header logo (replaces text title if set)
+    if (elements.portalHeaderLogo && elements.portalHeader) {
+      if (config.headerLogo) {
+        // Add cache-bust parameter so browser always loads fresh image
+        const bustUrl = config.headerLogo + (config.headerLogo.includes('?') ? '&' : '?') + '_v=' + Date.now();
+        elements.portalHeaderLogo.src = bustUrl;
+        elements.portalHeaderLogo.style.display = 'block';
+        elements.portalHeader.classList.add('has-logo');
+      } else {
+        elements.portalHeaderLogo.style.display = 'none';
+        elements.portalHeader.classList.remove('has-logo');
+      }
     }
 
     // Apply colors
@@ -1531,6 +1546,11 @@
       } else {
         socket = sessionSocket;
       }
+      // CRITICAL: Remove any previously stacked listeners before adding new ones.
+      // Without this, every open/close of INSERT COIN modal adds duplicate listeners,
+      // causing pulse counts to double/triple on subsequent opens.
+      socket.off('coin-pulse', handleCoinPulse);
+      socket.off('nodemcu-pulse', handleNodeMCUPulse);
       socket.on('coin-pulse', handleCoinPulse);
       socket.on('nodemcu-pulse', handleNodeMCUPulse);
       // Tell server to activate GPIO coin detection (on-demand mode)

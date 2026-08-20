@@ -4813,7 +4813,7 @@ app.post('/api/rewards/config', requireAdmin, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ─────────────────────────────────────────────────────────
+// ───────────────────────────────────────────��─────────────
 // REFERRAL / AFFILIATE PROGRAM API ENDPOINTS
 // ─────────────────────────────────────────────────────────
 
@@ -6565,6 +6565,75 @@ app.post('/api/portal/config', requireAdmin, async (req, res) => {
     await db.run('INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)', ['portal_config', JSON.stringify(req.body)]);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// ── Portal Header Logo Upload (uses express-fileupload) ────
+
+// Upload header logo/image/GIF
+app.post('/api/portal/header-logo', requireAdmin, (req, res) => {
+  try {
+    if (!req.files || !req.files.headerLogo) {
+      return res.status(400).json({ success: false, message: 'No file uploaded.' });
+    }
+    const file = req.files.headerLogo;
+    // Validate image type (PNG, JPG, GIF, WebP)
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.mimetype)) {
+      return res.status(400).json({ success: false, message: 'Only PNG, JPG, GIF, or WebP files are allowed.' });
+    }
+    // 5MB limit
+    if (file.size > 5 * 1024 * 1024) {
+      return res.status(400).json({ success: false, message: 'File too large (max 5MB).' });
+    }
+    const dir = path.join(__dirname, 'uploads', 'branding');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    const ext = path.extname(file.name);
+    const filename = 'header-' + Date.now() + ext;
+    const filePath = path.join(dir, filename);
+    file.mv(filePath, async (err) => {
+      if (err) return res.status(500).json({ success: false, message: 'Failed to save file.' });
+      const logoPath = '/uploads/branding/' + filename;
+      try {
+        // Update portal_config with headerLogo
+        const configRow = await db.get('SELECT value FROM config WHERE key = ?', ['portal_config']);
+        let config = configRow?.value ? JSON.parse(configRow.value) : {};
+        // Delete old header logo file if exists
+        if (config.headerLogo) {
+          const oldPath = path.join(__dirname, config.headerLogo);
+          if (fs.existsSync(oldPath)) {
+            try { fs.unlinkSync(oldPath); } catch (e) { console.warn('Failed to delete old header logo:', e); }
+          }
+        }
+        config.headerLogo = logoPath;
+        await db.run('INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)', ['portal_config', JSON.stringify(config)]);
+        res.json({ success: true, path: logoPath });
+      } catch (dbErr) {
+        res.status(500).json({ success: false, message: dbErr.message });
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Delete header logo
+app.delete('/api/portal/header-logo', requireAdmin, async (req, res) => {
+  try {
+    const configRow = await db.get('SELECT value FROM config WHERE key = ?', ['portal_config']);
+    let config = configRow?.value ? JSON.parse(configRow.value) : {};
+    // Delete file from disk
+    if (config.headerLogo) {
+      const oldPath = path.join(__dirname, config.headerLogo);
+      if (fs.existsSync(oldPath)) {
+        try { fs.unlinkSync(oldPath); } catch (e) { console.warn('Failed to delete header logo:', e); }
+      }
+    }
+    config.headerLogo = '';
+    await db.run('INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)', ['portal_config', JSON.stringify(config)]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 // ── Portal Background Image Upload (uses express-fileupload, NOT multer) ────
@@ -10736,7 +10805,7 @@ function startCaptivePortalDns() {
         resp.writeUInt16BE(0xC00C, off); off += 2; // name pointer to question
         resp.writeUInt16BE(1, off); off += 2;      // TYPE A
         resp.writeUInt16BE(1, off); off += 2;      // CLASS IN
-        resp.writeUInt32BE(10, off); off += 4;     // TTL 10s (short, like dnsmasq hijack)
+        resp.writeUInt32BE(0, off); off += 4;      // TTL 0 — prevent device DNS caching (fixes YouTube/stale entries after payment)
         resp.writeUInt16BE(4, off); off += 2;      // RDLENGTH
         resp[off++] = octets[0]; resp[off++] = octets[1];
         resp[off++] = octets[2]; resp[off++] = octets[3];
@@ -10975,7 +11044,8 @@ function startBackgroundTimers() {
 
       const whitelistedMacsGuard = new Set();
       if (natRulesText) {
-        const wlRegex = /-A PREROUTING -m mac --mac-source ([0-9A-Fa-f:]+) -j ACCEPT/g;
+        // Match both legacy blanket ACCEPT and current port-80-specific ACCEPT
+        const wlRegex = /-A PREROUTING -m mac --mac-source ([0-9A-Fa-f:]+)(?: -p tcp -m tcp --dport 80)? -j ACCEPT/g;
         let m;
         while ((m = wlRegex.exec(natRulesText)) !== null) whitelistedMacsGuard.add(m[1].toUpperCase());
       }
