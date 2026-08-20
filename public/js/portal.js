@@ -1,5 +1,5 @@
 /**
- * NEXIFI PISOWIFI Portal - Vanilla JavaScript
+ * RJD PISOWIFI Portal - Vanilla JavaScript
  * Fully Wired to Backend System
  */
 
@@ -772,9 +772,9 @@
     const existingNotice = document.getElementById('coinslot-offline-notice');
     if (existingNotice) existingNotice.remove();
 
-    if (vlanSlots.length === 0) {
+    // If board has no main GPIO (e.g. x64_pc) AND no remote NodeMCU sub-vendos are online
+    if (!boardHasGpio() && vlanSlots.length === 0) {
       elements.coinslotSelector.style.display = 'none';
-      // Show notice — whether no VLAN at all, or VLAN has no coinboxes
       if (clientVlanId === null || clientVlanId === undefined) {
         showOfflineNotice('No coinslot available — your connection has no VLAN assigned. Please contact admin via chat for assistance.');
       } else {
@@ -1774,8 +1774,8 @@
   async function handleInsertCoin() {
     hideError();
 
-    // Block if no VLAN — strict isolation, no coinslot available
-    if (clientVlanId === null || clientVlanId === undefined) {
+    // If selecting a remote NodeMCU sub-vendo (not main machine), enforce VLAN isolation
+    if (selectedSlot !== 'main' && (clientVlanId === null || clientVlanId === undefined)) {
       showError('No coinslot available — your connection has no VLAN assigned. Please contact admin via chat for assistance.');
       return;
     }
@@ -2164,7 +2164,7 @@
   // ── Initialization ───
 
   async function init() {
-    console.log('[Portal] Initializing NEXIFI PISOWIFI Portal...');
+    console.log('[Portal] Initializing RJD PISOWIFI Portal...');
 
     // Fetch portal config
     portalConfig = await fetchPortalConfig();

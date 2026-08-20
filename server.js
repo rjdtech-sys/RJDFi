@@ -2657,10 +2657,12 @@ app.post('/api/admin/upload-audio', requireAdmin, (req, res, next) => {
 // GET UPLOADED AUDIO FILES LIST
 app.get('/api/admin/audio-files', requireAdmin, (req, res) => {
   const audioDir = path.join(__dirname, 'uploads', 'audio');
+  if (!fs.existsSync(audioDir)) {
+    try { fs.mkdirSync(audioDir, { recursive: true }); } catch (_) {}
+  }
 
   fs.readdir(audioDir, (err, files) => {
     if (err) {
-      console.error('Error reading audio directory:', err);
       return res.json({ files: [] });
     }
 
