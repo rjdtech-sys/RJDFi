@@ -1,8 +1,8 @@
 {
-  "version_code": 223,
-  "version_name": "3.14.37",
-  "filename": "RJD-PisoWiFi-v3.14.37-Update.nxs",
-  "release_notes": "RJD PisoWiFi System v3.14.37 - Hardware ID In-Memory Caching (0-2% CPU), Full Vendors Metadata & Revenue Priority Sync\n\n⚡ CPU Performance Optimization & Vendors Metadata\n- Added in-memory hardware serial caching to lib/hardware.js to eliminate repeated sudo/exec calls and stabilize CPU usage\n- Populate location, license_key, is_licensed, and activated_at in Supabase vendors table\n- Refined calculateRevenues to prioritize primary sales logs and prevent total revenue pumping\n- Gracefully suppress log spam for non-existent Supabase schema tables",
+  "version_code": 224,
+  "version_name": "3.14.38",
+  "filename": "RJD-PisoWiFi-v3.14.38-Update.nxs",
+  "release_notes": "RJD PisoWiFi System v3.14.38 - Syntax Cleanup in EdgeSync Status Update Fallback\n\n🛡️ Clean Code & Stable Execution\n- Fixed duplicated object block syntax error in edge-sync licenses update fallback on line 704\n- Ensures uninterrupted boot, status synchronization, and revenue logging",
   "published_at": "2026-08-21T00:00:00.000Z",
   "bucket": "UPDATE FILE"
 }
