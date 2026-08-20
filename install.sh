@@ -171,6 +171,18 @@ git config --global http.postBuffer 524288000 2>/dev/null || true
 git config --global http.lowSpeedLimit 1000 2>/dev/null || true
 git config --global http.lowSpeedTime 60 2>/dev/null || true
 
+TEMP_BACKUP="/tmp/rjd_config_backup"
+rm -rf "$TEMP_BACKUP"
+mkdir -p "$TEMP_BACKUP"
+
+if [ -d "$INSTALL_DIR" ]; then
+    echo -e "${CYAN}► Preserving existing database, .env config & uploads...${NC}"
+    [ -f "$INSTALL_DIR/.env" ] && cp "$INSTALL_DIR/.env" "$TEMP_BACKUP/" 2>/dev/null || true
+    [ -f "$INSTALL_DIR/pisowifi.sqlite" ] && cp "$INSTALL_DIR/pisowifi.sqlite"* "$TEMP_BACKUP/" 2>/dev/null || true
+    [ -d "$INSTALL_DIR/data" ] && cp -r "$INSTALL_DIR/data" "$TEMP_BACKUP/" 2>/dev/null || true
+    [ -d "$INSTALL_DIR/uploads" ] && cp -r "$INSTALL_DIR/uploads" "$TEMP_BACKUP/" 2>/dev/null || true
+fi
+
 if [ -f "$SCRIPT_DIR/server.js" ]; then
     echo -e "${CYAN}► Copying local installation payload from MicroSD...${NC}"
     cp -r "$SCRIPT_DIR"/* "$INSTALL_DIR"/ 2>/dev/null || true
@@ -182,6 +194,16 @@ else
 fi
 
 cd "$INSTALL_DIR"
+
+# Restore preserved database, .env, and uploads
+if [ -d "$TEMP_BACKUP" ]; then
+    echo -e "${GREEN}► Restoring preserved database, .env config & uploads...${NC}"
+    [ -f "$TEMP_BACKUP/.env" ] && cp "$TEMP_BACKUP/.env" "$INSTALL_DIR/.env" 2>/dev/null || true
+    [ -f "$TEMP_BACKUP/pisowifi.sqlite" ] && cp "$TEMP_BACKUP/pisowifi.sqlite"* "$INSTALL_DIR/" 2>/dev/null || true
+    [ -d "$TEMP_BACKUP/data" ] && cp -r "$TEMP_BACKUP/data" "$INSTALL_DIR/" 2>/dev/null || true
+    [ -d "$TEMP_BACKUP/uploads" ] && cp -r "$TEMP_BACKUP/uploads" "$INSTALL_DIR/" 2>/dev/null || true
+    rm -rf "$TEMP_BACKUP"
+fi
 
 # Configure .env file if template exists and .env is missing
 if [ ! -f "$INSTALL_DIR/.env" ]; then
