@@ -1,8 +1,8 @@
 {
-  "version_code": 217,
-  "version_name": "3.14.31",
-  "filename": "RJD-PisoWiFi-v3.14.31-Update.nxs",
-  "release_notes": "RJD PisoWiFi System v3.14.31 - Multi-Table Supabase Licenses & Revenue Synchronization\n\n💰 Complete Cloud License Revenue Sync\n- Updated edge-sync to update licenses table (Cloud License Dashboard) alongside vendors and hardware_licenses in Supabase\n- Supports daily/weekly/monthly/yearly/total revenue field sync across all database schema formats",
+  "version_code": 218,
+  "version_name": "3.14.32",
+  "filename": "RJD-PisoWiFi-v3.14.32-Update.nxs",
+  "release_notes": "RJD PisoWiFi System v3.14.32 - Fix Machine Online Status & Revenue Cloud Sync Guard\n\n⚡ Machine Registration & Status Sync Fix\n- Fixed registerOrFetchMachine in edge-sync to fetch vendor_id directly from bound cloud license RJD-PISO-63C4DE5B-93AC2ADA\n- Changed status payload default from 'offline' to 'online'\n- Bypassed machineId exit guard in syncMachineStatus so revenue and online status sync directly by hardware_id CPU-02c00081ece21355",
   "published_at": "2026-08-21T00:00:00.000Z",
   "bucket": "UPDATE FILE"
 }
