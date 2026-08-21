@@ -1996,9 +1996,9 @@ const { syncSaleToCloud, getSyncStats } = require('./lib/edge-sync');
 const _licenseCache = { data: null, trialData: null, timestamp: 0 };
 const LICENSE_CACHE_TTL = 86400000; // 24 hours (86400 seconds)
 
-async function getCachedLicenseStatus() {
+async function getCachedLicenseStatus(forceFresh = false) {
   const now = Date.now();
-  if (_licenseCache.data && (now - _licenseCache.timestamp) < LICENSE_CACHE_TTL) {
+  if (!forceFresh && _licenseCache.data && (now - _licenseCache.timestamp) < LICENSE_CACHE_TTL) {
     return { verification: _licenseCache.data, trialStatus: _licenseCache.trialData };
   }
   if (!systemHardwareId) systemHardwareId = await getUniqueHardwareId();
@@ -3252,7 +3252,8 @@ app.use(async (req, res, next) => {
 // LICENSE STATUS API
 app.get('/api/license/status', async (req, res) => {
   try {
-    const { verification, trialStatus } = await getCachedLicenseStatus();
+    const forceFresh = req.query.fresh === 'true' || req.query.force === 'true';
+    const { verification, trialStatus } = await getCachedLicenseStatus(forceFresh);
     const isLicensed = Boolean(verification.isValid && verification.isActivated);
     const isRevoked = Boolean(verification.isRevoked || trialStatus.isRevoked);
     const canOperate = Boolean((isLicensed || trialStatus.isTrialActive) && !isRevoked);
