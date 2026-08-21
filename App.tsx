@@ -55,7 +55,29 @@ const App: React.FC = () => {
     localStorage.setItem('rjd_admin_last_tab', activeTab);
   }, [activeTab]);
 
-  const [licenseStatus, setLicenseStatus] = useState<{ isLicensed: boolean, isRevoked: boolean, canOperate: boolean }>({ isLicensed: true, isRevoked: false, canOperate: true });
+  const [licenseStatus, setLicenseStatus] = useState<{
+    isLicensed: boolean;
+    isRevoked: boolean;
+    canOperate: boolean;
+    category?: string;
+    features?: {
+      piso_wifi: boolean;
+      phone_rental: boolean;
+      nodemcu: boolean;
+      mikrotik: boolean;
+    };
+  }>({
+    isLicensed: true,
+    isRevoked: false,
+    canOperate: true,
+    category: 'piso_wifi',
+    features: {
+      piso_wifi: true,
+      phone_rental: false,
+      nodemcu: false,
+      mikrotik: false
+    }
+  });
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [rates, setRates] = useState<Rate[]>([]);
   const [activeSessions, setActiveSessions] = useState<UserSession[]>([]);
@@ -547,11 +569,11 @@ const App: React.FC = () => {
                   {activeTab === AdminTab.Rates && <RatesManager rates={rates} setRates={updateRates} />}
                   {activeTab === AdminTab.Network && <NetworkSettings />}
                   {activeTab === AdminTab.Devices && <DeviceManager sessions={activeSessions} refreshSessions={loadData} refreshDevices={loadData} />}
-                  {activeTab === AdminTab.Hardware && <HardwareManager />}
+                  {activeTab === AdminTab.Hardware && <HardwareManager licenseStatus={licenseStatus} />}
                   {activeTab === AdminTab.Themes && <ThemeSettings />}
                   {activeTab === AdminTab.PortalEditor && <PortalEditor />}
                   {activeTab === AdminTab.PPPoE && <PPPoEServer />}
-                  {activeTab === AdminTab.MikroTik && <MikroTikManagement />}
+                  {activeTab === AdminTab.MikroTik && <MikroTikManagement licenseStatus={licenseStatus} />}
                   {activeTab === AdminTab.Bandwidth && <BandwidthManager devices={devices} rates={rates} />}
                   {activeTab === AdminTab.MultiWan && <MultiWanSettings />}
                   {activeTab === AdminTab.WireGuard && <WireGuardSettings />}
@@ -561,7 +583,7 @@ const App: React.FC = () => {
                   {activeTab === AdminTab.SalesInventory && <SalesInventory />}
                   {activeTab === AdminTab.Employees && <EmployeeManagement />}
                   {activeTab === AdminTab.EquipmentInventory && <EquipmentInventory />}
-                  {activeTab === AdminTab.PhoneRental && <PhoneRental />}
+                  {activeTab === AdminTab.PhoneRental && <PhoneRental licenseStatus={licenseStatus} />}
                   {activeTab === AdminTab.Referrals && <ReferralManager />}
                   {activeTab === AdminTab.Remote && <RemoteManager />}
                   {activeTab === AdminTab.Rewards && <RewardsSettings />}

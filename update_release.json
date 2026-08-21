@@ -1,8 +1,8 @@
 {
-  "version_code": 227,
-  "version_name": "3.14.41",
-  "filename": "RJD-PisoWiFi-v3.14.41-Update.nxs",
-  "release_notes": "RJD PisoWiFi System v3.14.41 - Vendors Table Revenue Join & Removal of Seed Fallback in Cloud License App\n\n🛡️ Accurate Vendor Revenue Linking\n- Updated LicenseManager listLicenses to join live machine revenue columns from vendors table onto licenses\n- Removed hardcoded random seed revenue calculation in rjdfi-cloud-license UI\n- Ensures zero-fallback revenue display matching local admin dashboard",
+  "version_code": 228,
+  "version_name": "3.14.42",
+  "filename": "RJD-PisoWiFi-v3.14.42-Update.nxs",
+  "release_notes": "RJD PisoWiFi System v3.14.42 - Strict Category-Level License Activation & Feature Locking\n\n🛡️ Module-Level License Enforcement\n- piso_wifi key (RJD-PISO-) activates ONLY PisoWiFi Vendo System features\n- Phone Rental System (RJD-RENT-), NodeMCU Sub-Vendos (RJD-MCU-), and MikroTik Integration (RJD-MIKRO-) remain strictly locked with activation prompt unless their dedicated category keys are active\n- Added /api/license/status feature flags API and UI feature lock cards",
   "published_at": "2026-08-21T00:00:00.000Z",
   "bucket": "UPDATE FILE"
 }

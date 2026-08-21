@@ -3249,6 +3249,36 @@ app.use(async (req, res, next) => {
   next();
 });
 
+// LICENSE STATUS API
+app.get('/api/license/status', async (req, res) => {
+  try {
+    const { verification, trialStatus } = await getCachedLicenseStatus();
+    const isLicensed = Boolean(verification.isValid && verification.isActivated);
+    const isRevoked = Boolean(verification.isRevoked || trialStatus.isRevoked);
+    const canOperate = Boolean((isLicensed || trialStatus.isTrialActive) && !isRevoked);
+
+    const category = verification.category || 'piso_wifi';
+    const isTrial = Boolean(trialStatus.isTrialActive && !isLicensed);
+
+    res.json({
+      isLicensed,
+      isRevoked,
+      canOperate,
+      licenseKey: verification.licenseKey || null,
+      category,
+      features: verification.features || {
+        piso_wifi: true,
+        phone_rental: isTrial,
+        nodemcu: isTrial,
+        mikrotik: isTrial
+      },
+      trial: trialStatus
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // SESSIONS API
 app.get('/api/whoami', async (req, res) => {
   const clientIp = req.ip ? req.ip.replace('::ffff:', '') : '';

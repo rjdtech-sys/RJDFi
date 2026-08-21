@@ -37,6 +37,25 @@ const handleResponse = async (res: Response) => {
 };
 
 export const apiClient = {
+  // Fetch license status and feature flags
+  async getLicenseStatus(): Promise<{
+    isLicensed: boolean;
+    isRevoked: boolean;
+    canOperate: boolean;
+    licenseKey: string | null;
+    category: string;
+    features: {
+      piso_wifi: boolean;
+      phone_rental: boolean;
+      nodemcu: boolean;
+      mikrotik: boolean;
+    };
+    trial?: any;
+  }> {
+    const res = await fetch(`${API_BASE}/license/status`, { headers: getHeaders() });
+    return handleResponse(res);
+  },
+
   // Fetch all rates from the database
   async getRates(): Promise<Rate[]> {
     const res = await fetch(`${API_BASE}/rates`, { headers: getHeaders() });

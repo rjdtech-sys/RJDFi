@@ -8,16 +8,56 @@ import ApkInstallerSubPage from './ApkInstaller';
 // ============================================
 type SubPage = 'devices' | 'sessions' | 'report' | 'apps' | 'appupdate' | 'rates' | 'apkinstaller' | 'wallpaper';
 
+interface PhoneRentalProps {
+  licenseStatus?: {
+    isLicensed: boolean;
+    isRevoked: boolean;
+    canOperate: boolean;
+    licenseKey?: string | null;
+    category?: string;
+    features?: {
+      piso_wifi: boolean;
+      phone_rental: boolean;
+      nodemcu: boolean;
+      mikrotik: boolean;
+    };
+  };
+}
+
 // ============================================
 // PHONE RENTAL MANAGEMENT PAGE
 // ============================================
-const PhoneRental: React.FC = () => {
+const PhoneRental: React.FC<PhoneRentalProps> = ({ licenseStatus }) => {
   const [activeSubPage, setActiveSubPage] = useState<SubPage>('devices');
   const [devices, setDevices] = useState<RentalDevice[]>([]);
   const [sessions, setSessions] = useState<RentalSession[]>([]);
   const [report, setReport] = useState<RentalReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  if (licenseStatus?.features && !licenseStatus.features.phone_rental) {
+    return (
+      <div className="p-8 max-w-4xl mx-auto space-y-6">
+        <div className="bg-slate-900/90 border-2 border-amber-500/40 rounded-3xl p-8 backdrop-blur-xl shadow-2xl space-y-6 text-center">
+          <div className="w-20 h-20 bg-amber-500/10 border-2 border-amber-500/30 rounded-2xl flex items-center justify-center text-4xl mx-auto animate-pulse">
+            🔒
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-black text-white tracking-tight uppercase">Phone Rental System Unlicensed</h2>
+            <p className="text-slate-400 text-sm max-w-lg mx-auto leading-relaxed">
+              This machine is activated under key <b className="text-emerald-400">{licenseStatus.licenseKey || 'PisoWiFi Vendo Key'}</b>.
+              To unlock Phone Rental device management, please activate a dedicated <b className="text-amber-400">Phone Rental License Key (RJD-RENT-)</b>.
+            </p>
+          </div>
+          <div className="pt-4 flex justify-center gap-4">
+            <button onClick={() => window.location.reload()} className="px-6 py-3 bg-amber-500 text-slate-950 font-black rounded-xl hover:bg-amber-400 transition-all text-xs uppercase tracking-wider shadow-lg">
+              Refresh License Status
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const loadData = useCallback(async () => {
     try {

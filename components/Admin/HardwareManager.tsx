@@ -23,7 +23,23 @@ const rpiMappings: Record<string, { name?: string; pins: Record<number, number> 
 const RASPBERRY_PI_MODELS = ['raspberry_pi_4b', 'raspberry_pi_2b_3b', 'raspberry_pi_5', 'raspberry_pi_zero'];
 const RASPBERRY_PI_DEFAULT_MODEL = 'raspberry_pi_4b';
 
-const HardwareManager: React.FC = () => {
+interface HardwareManagerProps {
+  licenseStatus?: {
+    isLicensed: boolean;
+    isRevoked: boolean;
+    canOperate: boolean;
+    licenseKey?: string | null;
+    category?: string;
+    features?: {
+      piso_wifi: boolean;
+      phone_rental: boolean;
+      nodemcu: boolean;
+      mikrotik: boolean;
+    };
+  };
+}
+
+const HardwareManager: React.FC<HardwareManagerProps> = ({ licenseStatus }) => {
   const [board, setBoard] = useState<BoardType>('raspberry_pi');
   const [pin, setPin] = useState(2);
   const [boardModel, setBoardModel] = useState<string>('orange_pi_one');
