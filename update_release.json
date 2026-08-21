@@ -1,8 +1,8 @@
 {
-  "version_code": 226,
-  "version_name": "3.14.40",
-  "filename": "RJD-PisoWiFi-v3.14.40-Update.nxs",
-  "release_notes": "RJD PisoWiFi System v3.14.40 - Deduplicated Sales Logs Insert & Exact Cloud Revenue Sync\n\n🛡️ Sales Deduplication & Accurate Cloud Totals\n- Implemented upsert with deterministic transaction ID (txId) in recordSale to eliminate duplicate rows in sales_logs table\n- Prevents trigger multiplication on sales logs\n- Syncs true local revenues directly to Supabase licenses and vendors tables",
+  "version_code": 227,
+  "version_name": "3.14.41",
+  "filename": "RJD-PisoWiFi-v3.14.41-Update.nxs",
+  "release_notes": "RJD PisoWiFi System v3.14.41 - Vendors Table Revenue Join & Removal of Seed Fallback in Cloud License App\n\n🛡️ Accurate Vendor Revenue Linking\n- Updated LicenseManager listLicenses to join live machine revenue columns from vendors table onto licenses\n- Removed hardcoded random seed revenue calculation in rjdfi-cloud-license UI\n- Ensures zero-fallback revenue display matching local admin dashboard",
   "published_at": "2026-08-21T00:00:00.000Z",
   "bucket": "UPDATE FILE"
 }
