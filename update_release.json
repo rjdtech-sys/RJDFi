@@ -1,8 +1,8 @@
 {
-  "version_code": 224,
-  "version_name": "3.14.38",
-  "filename": "RJD-PisoWiFi-v3.14.38-Update.nxs",
-  "release_notes": "RJD PisoWiFi System v3.14.38 - Syntax Cleanup in EdgeSync Status Update Fallback\n\n🛡️ Clean Code & Stable Execution\n- Fixed duplicated object block syntax error in edge-sync licenses update fallback on line 704\n- Ensures uninterrupted boot, status synchronization, and revenue logging",
+  "version_code": 225,
+  "version_name": "3.14.39",
+  "filename": "RJD-PisoWiFi-v3.14.39-Update.nxs",
+  "release_notes": "RJD PisoWiFi System v3.14.39 - Dual Column Schema Revenue Sync & Log Warning Elimination\n\n🛡️ Revenue Sync & Schema Cache Suppression\n- Updated edge-sync to send dual column revenue fields (daily_revenue/daily, weekly_revenue/weekly, monthly_revenue/monthly, yearly_revenue/yearly, total_revenue/total) matching Supabase schema\n- Updated licenses table by both hardware_id and license_key to fix Cloud License Dashboard revenue cards\n- Suppressed missing wifi_devices table schema cache warning logs",
   "published_at": "2026-08-21T00:00:00.000Z",
   "bucket": "UPDATE FILE"
 }
