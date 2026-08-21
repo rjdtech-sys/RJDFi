@@ -136,15 +136,16 @@ for pm2dump in "$MOUNT_DIR/root/.pm2/dump.pm2" "$MOUNT_DIR/home"/*/.pm2/dump.pm2
   fi
 done
 
-echo "🧹 Unmounting root partition..."
+echo "🧹 Syncing disk buffers & unmounting root partition..."
 sync
-umount -l "$MOUNT_DIR" 2>/dev/null || umount "$MOUNT_DIR" || true
+umount "$MOUNT_DIR" 2>/dev/null || (sleep 2 && umount -f "$MOUNT_DIR" 2>/dev/null) || true
 losetup -d "$LOOP_DEV" 2>/dev/null || true
 sync
+sleep 2
 
 if [ -f "$IMG_FILE" ]; then
-  echo "⚡ Compressing image into gzip format..."
-  gzip -fk9 "$IMG_FILE" || true
+  echo "⚡ Compressing image into gzip format ($IMG_FILE)..."
+  gzip -fk9 "$IMG_FILE"
 fi
 
 echo ""
