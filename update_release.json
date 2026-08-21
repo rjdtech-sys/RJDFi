@@ -1,8 +1,8 @@
 {
-  "version_code": 225,
-  "version_name": "3.14.39",
-  "filename": "RJD-PisoWiFi-v3.14.39-Update.nxs",
-  "release_notes": "RJD PisoWiFi System v3.14.39 - Dual Column Schema Revenue Sync & Log Warning Elimination\n\n🛡️ Revenue Sync & Schema Cache Suppression\n- Updated edge-sync to send dual column revenue fields (daily_revenue/daily, weekly_revenue/weekly, monthly_revenue/monthly, yearly_revenue/yearly, total_revenue/total) matching Supabase schema\n- Updated licenses table by both hardware_id and license_key to fix Cloud License Dashboard revenue cards\n- Suppressed missing wifi_devices table schema cache warning logs",
+  "version_code": 226,
+  "version_name": "3.14.40",
+  "filename": "RJD-PisoWiFi-v3.14.40-Update.nxs",
+  "release_notes": "RJD PisoWiFi System v3.14.40 - Deduplicated Sales Logs Insert & Exact Cloud Revenue Sync\n\n🛡️ Sales Deduplication & Accurate Cloud Totals\n- Implemented upsert with deterministic transaction ID (txId) in recordSale to eliminate duplicate rows in sales_logs table\n- Prevents trigger multiplication on sales logs\n- Syncs true local revenues directly to Supabase licenses and vendors tables",
   "published_at": "2026-08-21T00:00:00.000Z",
   "bucket": "UPDATE FILE"
 }
