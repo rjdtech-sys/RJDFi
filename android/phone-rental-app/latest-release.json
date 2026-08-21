@@ -1,7 +1,0 @@
-{
-  "version_code": 42,
-  "version_name": "3.3.6",
-  "filename": "RJD-Phone-Rental-v3.3.6-KioskHomeFix.apk",
-  "release_notes": "- KIOSK: HOME button now forces back to rental app main screen via persistent preferred activity\n- KIOSK: RECENTS restricted to whitelisted apps only - no system desktop access\n- KIOSK: Status bar disabled during active session\n- KIOSK: System Settings hidden during active session\n- KIOSK: All restrictions properly restored when session ends or pauses",
-  "published_at": "2026-04-25T12:00:00.000Z"
-}

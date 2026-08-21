@@ -4,14 +4,28 @@
 .env.production
 .env.staging
 
-# Large Binaries & Disk Images
+# Large Binaries, Disk Images & APKs
 *.img.gz
 *.apk
 
-# Android Build Intermediates
-android/**/build/
-android/.gradle/
+# Android Source Code & Build Intermediates (PRIVATE PROPRIETARY)
+android/
 .gradle/
+
+# Supabase Schemas & Private SQL Scripts (PRIVATE PROPRIETARY)
+supabase/
+*.sql
+
+# Developer Internal Documentation & Guides
+*_GUIDE*.md
+*_ARCHITECTURE*.md
+*_INSTRUCTIONS*.md
+*_CHANGES*.md
+*_STATUS.md
+RELEASE_NOTES_*.md
+SUPABASE_SETUP.md
+LICENSE_SYSTEM_README.md
+NODEMCU_LICENSE_SYSTEM.md
 
 # SQLite Databases & Local Data
 *.sqlite
