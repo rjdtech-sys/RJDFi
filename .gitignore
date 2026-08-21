@@ -5,8 +5,12 @@
 .env.staging
 
 # Large Binaries, Disk Images & APKs
+*.img
 *.img.gz
 *.apk
+
+# Internal Developer Tools & Image Rebranding Scripts
+scripts/rebrand-img.sh
 
 # Android Source Code & Build Intermediates (PRIVATE PROPRIETARY)
 android/
