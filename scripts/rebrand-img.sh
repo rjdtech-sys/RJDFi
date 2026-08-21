@@ -6,11 +6,24 @@
 
 set -e
 
-RAW_IMG="${1:-Image/rjdfi_opi1_pc_v3.6.0-stable.img}"
-if [ ! -f "$RAW_IMG" ]; then
-  echo "❌ Error: Image file '$RAW_IMG' not found!"
+RAW_IMG="$1"
+if [ -z "$RAW_IMG" ] || [ ! -f "$RAW_IMG" ]; then
+  if [ -f "Image/rjdfi_opi1_pc_v3.6.0-stable.img" ]; then
+    RAW_IMG="Image/rjdfi_opi1_pc_v3.6.0-stable.img"
+  elif [ -f "Image" ]; then
+    RAW_IMG="Image"
+  else
+    RAW_IMG=$(find . -maxdepth 2 -name "*.img" 2>/dev/null | head -n 1)
+  fi
+fi
+
+if [ -z "$RAW_IMG" ] || [ ! -f "$RAW_IMG" ]; then
+  echo "❌ Error: Could not find any .img file in /opt/rjd-pisowifi/ or /opt/rjd-pisowifi/Image/"
+  echo "👉 Please re-upload your .img file from Windows to Orange Pi using:"
+  echo "   scp \"F:\\My Piso Wifi System\\RJDFi\\Image\\rjdfi_opi1_pc_v3.6.0-stable.img\" root@192.168.1.47:/opt/rjd-pisowifi/Image/"
   exit 1
 fi
+
 IMG_FILE=$(realpath "$RAW_IMG")
 MOUNT_DIR="/mnt/rjdfi_img"
 
