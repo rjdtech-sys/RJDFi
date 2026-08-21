@@ -6,16 +6,16 @@
 
 set -e
 
-IMG_FILE="${1:-rjdfi_opi1_pc_v3.6.0-stable.img}"
+RAW_IMG="${1:-Image/rjdfi_opi1_pc_v3.6.0-stable.img}"
+if [ ! -f "$RAW_IMG" ]; then
+  echo "❌ Error: Image file '$RAW_IMG' not found!"
+  exit 1
+fi
+IMG_FILE=$(realpath "$RAW_IMG")
 MOUNT_DIR="/mnt/rjdfi_img"
 
 if [ "$EUID" -ne 0 ]; then
   echo "❌ Error: Please run this tool as root (sudo bash rebrand-img.sh <image_file>)"
-  exit 1
-fi
-
-if [ ! -f "$IMG_FILE" ]; then
-  echo "❌ Error: Image file '$IMG_FILE' not found!"
   exit 1
 fi
 
@@ -137,11 +137,15 @@ for pm2dump in "$MOUNT_DIR/root/.pm2/dump.pm2" "$MOUNT_DIR/home"/*/.pm2/dump.pm2
 done
 
 echo "🧹 Unmounting root partition..."
-umount "$MOUNT_DIR"
-losetup -d "$LOOP_DEV"
+sync
+umount -l "$MOUNT_DIR" 2>/dev/null || umount "$MOUNT_DIR" || true
+losetup -d "$LOOP_DEV" 2>/dev/null || true
+sync
 
-echo "⚡ Compressing image into gzip format..."
-gzip -fk9 "$IMG_FILE"
+if [ -f "$IMG_FILE" ]; then
+  echo "⚡ Compressing image into gzip format..."
+  gzip -fk9 "$IMG_FILE" || true
+fi
 
 echo ""
 echo "=================================================================="
