@@ -6,7 +6,22 @@
 
 set -e
 
-RAW_IMG="$1"
+ARG1="$1"
+ARG2="$2"
+
+NEW_ROOT_PASS=""
+RAW_IMG=""
+
+if [ -n "$ARG1" ]; then
+  if [[ "$ARG1" == *.img ]]; then
+    RAW_IMG="$ARG1"
+    NEW_ROOT_PASS="$ARG2"
+  else
+    NEW_ROOT_PASS="$ARG1"
+    RAW_IMG="$ARG2"
+  fi
+fi
+
 if [ -z "$RAW_IMG" ] || [ ! -f "$RAW_IMG" ]; then
   if [ -f "Image/rjdfi_opi1_pc_v3.6.0-stable.img" ]; then
     RAW_IMG="Image/rjdfi_opi1_pc_v3.6.0-stable.img"
@@ -157,8 +172,8 @@ sync
 sleep 2
 
 if [ -f "$IMG_FILE" ]; then
-  echo "⚡ Compressing image into gzip format ($IMG_FILE)..."
-  gzip -fk9 "$IMG_FILE"
+  echo "⚡ Compressing image into gzip format (${IMG_FILE}.gz)..."
+  gzip -c9 "$IMG_FILE" > "${IMG_FILE}.gz"
 fi
 
 echo ""
