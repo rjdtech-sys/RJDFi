@@ -57,6 +57,7 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+modprobe loop 2>/dev/null || true
 echo "🚀 Setting up loop device for $IMG_FILE..."
 LOOP_DEV=$(losetup -fP --show "$IMG_FILE")
 ROOT_PART="${LOOP_DEV}p1"
