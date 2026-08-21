@@ -32,8 +32,18 @@ if [ -z "$RAW_IMG" ] || [ ! -f "$RAW_IMG" ]; then
   fi
 fi
 
+# If no uncompressed .img exists, auto-decompress any .img.gz archive found
 if [ -z "$RAW_IMG" ] || [ ! -f "$RAW_IMG" ]; then
-  echo "❌ Error: Could not find any .img file in /opt/rjd-pisowifi/ or /opt/rjd-pisowifi/Image/"
+  GZ_FILE=$(find . -maxdepth 2 -name "*.img.gz" 2>/dev/null | head -n 1)
+  if [ -n "$GZ_FILE" ] && [ -f "$GZ_FILE" ]; then
+    echo "📦 Found compressed image archive '$GZ_FILE'. Unpacking..."
+    gunzip -kf "$GZ_FILE" 2>/dev/null || gzip -dfk "$GZ_FILE" 2>/dev/null || true
+    RAW_IMG="${GZ_FILE%.gz}"
+  fi
+fi
+
+if [ -z "$RAW_IMG" ] || [ ! -f "$RAW_IMG" ]; then
+  echo "❌ Error: Could not find any .img or .img.gz file in /opt/rjd-pisowifi/ or /opt/rjd-pisowifi/Image/"
   echo "👉 Please re-upload your .img file from Windows to Orange Pi using:"
   echo "   scp \"F:\\My Piso Wifi System\\RJDFi\\Image\\rjdfi_opi1_pc_v3.6.0-stable.img\" root@192.168.1.47:/opt/rjd-pisowifi/Image/"
   exit 1
