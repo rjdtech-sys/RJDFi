@@ -1,8 +1,8 @@
 {
-  "version_code": 229,
-  "version_name": "3.14.43",
-  "filename": "RJD-PisoWiFi-v3.14.43-Update.nxs",
-  "release_notes": "RJD PisoWiFi System v3.14.43 - Clean QoS-nft Log Level & TC Fallback Notification\n\n📶 QoS Logging Optimization\n- Changed non-critical nftables fallback warning from console.error to console.info\n- Prevents false-positive error line logging in PM2 while maintaining seamless TC (Traffic Control) fallback",
+  "version_code": 230,
+  "version_name": "3.14.44",
+  "filename": "RJD-PisoWiFi-v3.14.44-Update.nxs",
+  "release_notes": "RJD PisoWiFi System v3.14.44 - Dynamic Image Rebranding & Production Bundle Payload Injection\n\n🖼️ Image Rebranding & Distribution Tooling\n- Updated rebrand-img.sh to dynamically fetch current system version v3.14.44\n- Injects compiled production dist/ frontend bundle, metadata.json, update_release.json into target SD card image\n- Refreshes MOTD welcome banner to v3.14.44 and clears stale log files inside mounted rootfs",
   "published_at": "2026-08-21T00:00:00.000Z",
   "bucket": "UPDATE FILE"
 }
