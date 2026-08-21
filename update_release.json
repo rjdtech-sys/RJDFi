@@ -1,8 +1,8 @@
 {
-  "version_code": 228,
-  "version_name": "3.14.42",
-  "filename": "RJD-PisoWiFi-v3.14.42-Update.nxs",
-  "release_notes": "RJD PisoWiFi System v3.14.42 - Strict Category-Level License Activation & Feature Locking\n\n🛡️ Module-Level License Enforcement\n- piso_wifi key (RJD-PISO-) activates ONLY PisoWiFi Vendo System features\n- Phone Rental System (RJD-RENT-), NodeMCU Sub-Vendos (RJD-MCU-), and MikroTik Integration (RJD-MIKRO-) remain strictly locked with activation prompt unless their dedicated category keys are active\n- Added /api/license/status feature flags API and UI feature lock cards",
+  "version_code": 229,
+  "version_name": "3.14.43",
+  "filename": "RJD-PisoWiFi-v3.14.43-Update.nxs",
+  "release_notes": "RJD PisoWiFi System v3.14.43 - Clean QoS-nft Log Level & TC Fallback Notification\n\n📶 QoS Logging Optimization\n- Changed non-critical nftables fallback warning from console.error to console.info\n- Prevents false-positive error line logging in PM2 while maintaining seamless TC (Traffic Control) fallback",
   "published_at": "2026-08-21T00:00:00.000Z",
   "bucket": "UPDATE FILE"
 }
