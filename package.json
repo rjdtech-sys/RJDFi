@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node server.js",
     "build": "node scripts/build.js",
+    "build:protected": "node scripts/build-protected-backend.js",
     "build:optimized": "node scripts/build-optimized-simple.js",
     "build:lightweight": "esbuild index-optimized.tsx --bundle --minify --outfile=dist/bundle-optimized.js --format=iife --target=es5",
     "optimize:audio": "node scripts/optimize_audio.js",
@@ -42,7 +43,9 @@
   "author": "RJD",
   "license": "ISC",
   "devDependencies": {
+    "bytenode": "^1.5.3",
     "esbuild": "^0.27.2",
+    "javascript-obfuscator": "^4.1.1",
     "typescript": "^5.9.3"
   }
 }

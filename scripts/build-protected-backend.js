@@ -5,14 +5,21 @@ const fs = require('fs');
 console.log('🔒 Building & Protecting Backend Licensing Modules...');
 
 const files = [
+  'server.js',
   'lib/license.js',
   'lib/edge-sync.js',
   'lib/trial.js',
-  'lib/nodemcu-license.js'
+  'lib/nodemcu-license.js',
+  'lib/network.js',
+  'lib/qos.js',
+  'lib/system.js',
+  'lib/referrals.js'
 ];
 
 files.forEach(file => {
   const srcPath = path.join(__dirname, '..', file);
+  if (!fs.existsSync(srcPath)) return;
+
   const distPath = path.join(__dirname, '..', 'dist', file);
   const distDir = path.dirname(distPath);
 
