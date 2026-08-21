@@ -181,14 +181,28 @@ losetup -d "$LOOP_DEV" 2>/dev/null || true
 sync
 sleep 2
 
+TARGET_IMG="Image/rjdfi_opi1_pc_v${CURRENT_VER}-stable.img"
+TARGET_GZ="Image/rjdfi_opi1_pc_v${CURRENT_VER}-stable.img.gz"
+
 if [ -f "$IMG_FILE" ]; then
-  echo "⚡ Compressing image into gzip format (${IMG_FILE}.gz)..."
-  gzip -c9 "$IMG_FILE" > "${IMG_FILE}.gz"
+  # Rename or copy raw image to latest versioned filename
+  if [ "$IMG_FILE" != "$(realpath "$TARGET_IMG" 2>/dev/null)" ]; then
+    cp -f "$IMG_FILE" "$TARGET_IMG" 2>/dev/null || mv -f "$IMG_FILE" "$TARGET_IMG" 2>/dev/null || true
+  fi
+
+  FINAL_RAW="${TARGET_IMG}"
+  if [ ! -f "$FINAL_RAW" ]; then
+    FINAL_RAW="$IMG_FILE"
+  fi
+
+  echo "⚡ Compressing image into gzip format (${TARGET_GZ})..."
+  gzip -c9 "$FINAL_RAW" > "$TARGET_GZ"
 fi
 
 echo ""
 echo "=================================================================="
 echo "  🎉 REBRANDING SUCCESSFUL!"
-echo "  Output Raw Image:        $IMG_FILE"
-echo "  Output Compressed GZ:   ${IMG_FILE}.gz"
+echo "  System Version:          v${CURRENT_VER}"
+echo "  Output Raw Image:        ${TARGET_IMG}"
+echo "  Output Compressed GZ:   ${TARGET_GZ}"
 echo "=================================================================="
